@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMS | 전략 상세 분석</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+        body { font-family: 'Pretendard', sans-serif; line-height: 1.7; }
+        .prose-custom h2 { color: #f8fafc; font-weight: 700; font-size: 1.5rem; margin-top: 2.5rem; margin-bottom: 1rem; border-left: 4px solid #38bdf8; padding-left: 1rem; }
+        .prose-custom p { margin-bottom: 1.5rem; color: #cbd5e1; }
+        .prose-custom pre { background: #0f172a; padding: 1.5rem; border: 1px solid #1e293b; border-radius: 8px; overflow-x: auto; margin-bottom: 1.5rem; color: #38bdf8; font-family: monospace; }
+    </style>
+</head>
+<body class="bg-[#020617] text-slate-200">
+
+    <!-- 네비게이션 바 -->
+    <nav class="fixed w-full z-50 border-b border-slate-800/50 bg-[#020617]/90 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between h-16 items-center">
+            <a href="index.html" class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-slate-800 rounded flex items-center justify-center border border-slate-700">
+                    <span class="text-sky-400 font-bold text-xs">SMS</span>
+                </div>
+                <span class="text-lg font-semibold tracking-tight text-white">Systematic Multi Strategy</span>
+            </a>
+            <div class="hidden md:flex items-center space-x-8 text-sm">
+                <a href="index.html" class="text-slate-400 hover:text-white transition-colors">홈</a>
+                <a href="#" class="text-sky-400 font-medium">전략 아카이브</a>
+                <a href="#" class="text-slate-400 hover:text-white transition-colors">Pine 스크립트</a>
+                <a href="#" class="text-slate-400 hover:text-white transition-colors">도서 요약</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 콘텐츠 영역 -->
+    <main class="pt-32 pb-24 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
+        <!-- 메타 정보 -->
+        <div class="mb-12 border-b border-slate-900 pb-8">
+            <nav class="flex text-xs text-slate-500 gap-2 mb-4">
+                <a href="index.html" class="hover:text-sky-400">Home</a>
+                <span>/</span>
+                <span class="text-slate-400">전략 아카이브</span>
+            </nav>
+            <h1 class="text-3xl md:text-5xl font-extrabold text-white mb-6">
+                RSI 기반 평균 회귀 전략 분석
+            </h1>
+            <div class="flex gap-6 text-sm text-slate-500">
+                <span><i class="far fa-calendar mr-2"></i>2024.05.20</span>
+                <span><i class="far fa-folder mr-2"></i>Mean Reversion</span>
+            </div>
+        </div>
+
+        <div class="grid lg:grid-cols-4 gap-12">
+            <!-- 본문 -->
+            <article class="lg:col-span-3 prose-custom">
+                <p>평균 회귀 전략의 핵심 로직과 백테스트 결과를 정리합니다. 이 전략은 자산의 가격이 과도하게 하락했을 때 나타나는 기술적 반등을 목표로 합니다.</p>
+                
+                <h2>1. 전략 가설 설정</h2>
+                <p>가격이 장기 평균에서 과도하게 멀어졌을 때(RSI 25 이하) 다시 평균으로 회귀할 확률을 이용합니다.</p>
+                <pre>// TradingView Pine Script v5 Example
+rsiVal = ta.rsi(close, 14)
+buySignal = ta.crossover(rsiVal, 25)
+if (buySignal)
+    strategy.entry("Long", strategy.long)</pre>
+
+                <h2>2. 백테스트 분석 결과</h2>
+                <p>과거 3년간의 데이터를 시뮬레이션한 결과, 변동성이 큰 자산군에서 유의미한 수익 곡선을 보여주었습니다. 특히 하락장보다는 횡보장세에서 가짜 신호를 걸러내는 필터가 필수적입니다.</p>
+                
+                <div class="my-8 rounded-xl border border-slate-800 overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1611974717482-5829911e8609?q=80&w=1200&h=600&auto=format&fit=crop" alt="Chart" class="w-full opacity-60">
+                </div>
+            </article>
+
+            <!-- 사이드바 -->
+            <aside class="lg:col-span-1">
+                <div class="p-6 bg-slate-900/30 border border-slate-800 rounded-xl sticky top-24">
+                    <h4 class="text-sm font-bold text-white mb-4">참고 태그</h4>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="text-[10px] px-2 py-1 bg-slate-800 rounded text-slate-400">#퀀트</span>
+                        <span class="text-[10px] px-2 py-1 bg-slate-800 rounded text-slate-400">#백테스트</span>
+                        <span class="text-[10px] px-2 py-1 bg-slate-800 rounded text-slate-400">#RSI</span>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <footer class="border-t border-slate-900 py-10 text-center">
+        <p class="text-[10px] text-slate-600 uppercase tracking-widest">&copy; 2024 SMS Hub</p>
+    </footer>
+
+</body>
+</html>
