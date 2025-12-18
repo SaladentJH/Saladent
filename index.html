@@ -9,249 +9,258 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
-        body { font-family: 'Pretendard', sans-serif; overflow-x: hidden; background-color: #020617; }
-        .dashboard-card { background: #0f172a; border: 1px solid #1e293b; transition: all 0.2s; }
-        .dashboard-card:hover { border-color: #38bdf8; }
-        .nav-tab { cursor: pointer; padding: 1rem 1.25rem; transition: all 0.3s; border-bottom: 2px solid transparent; color: #64748b; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
-        .nav-tab.active { color: #38bdf8; border-bottom-color: #38bdf8; background: linear-gradient(to top, rgba(56, 189, 248, 0.1), transparent); }
+        body { font-family: 'Pretendard', sans-serif; overflow-x: hidden; background-color: #020617; color: #f1f5f9; }
+        .dashboard-card { background: #0f172a; border: 1px solid #1e293b; border-radius: 1.25rem; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden; }
+        .dashboard-card:hover { border-color: #38bdf8; transform: translateY(-4px); box-shadow: 0 10px 30px -10px rgba(56, 189, 248, 0.2); }
+        .nav-tab { cursor: pointer; padding: 1rem 1.5rem; transition: all 0.3s; border-bottom: 2px solid transparent; color: #64748b; font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 0.6rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .nav-tab.active { color: #38bdf8; border-bottom-color: #38bdf8; background: linear-gradient(to top, rgba(56, 189, 248, 0.05), transparent); }
+        .perf-table th { background: #1e293b; color: #94a3b8; font-size: 0.7rem; text-transform: uppercase; padding: 1.25rem 1rem; letter-spacing: 0.05em; font-weight: 800; border-bottom: 1px solid #334155; }
+        .perf-table td { padding: 1.25rem 1rem; border-bottom: 1px solid #1e293b; font-size: 0.85rem; }
+        .val-up { color: #10b981; }
+        .val-down { color: #ef4444; }
         .hidden { display: none !important; }
-        .modal-overlay { background: rgba(2, 6, 23, 0.9); backdrop-filter: blur(8px); }
-        .status-up { color: #10b981; }
-        .status-down { color: #ef4444; }
-        /* Table Custom */
-        .perf-table th { background: #1e293b; color: #94a3b8; font-size: 0.7rem; padding: 0.75rem; text-align: left; }
-        .perf-table td { padding: 0.75rem; border-bottom: 1px solid #1e293b; font-size: 0.8rem; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .param-tag { background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.15); color: #7dd3fc; padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; font-family: monospace; }
+        .modal-overlay { background: rgba(2, 6, 23, 0.9); backdrop-filter: blur(12px); z-index: 1000; }
+        input, textarea, select { background: #020617 !important; border: 1px solid #1e293b !important; color: #f1f5f9 !important; }
+        .drop-zone { border: 2px dashed #1e293b; transition: all 0.3s; }
+        .drop-zone.active { border-color: #38bdf8; background: rgba(56, 189, 248, 0.05); }
+        .ref-badge { padding: 2px 8px; border-radius: 99px; font-size: 9px; font-weight: 800; text-transform: uppercase; }
+        .ref-book { background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2); }
+        .ref-blog { background: rgba(56, 189, 248, 0.1); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.2); }
+        .ref-paper { background: rgba(168, 85, 247, 0.1); color: #a855f7; border: 1px solid rgba(168, 85, 247, 0.2); }
     </style>
 </head>
-<body class="text-slate-200">
+<body>
 
-    <!-- [1] 로그인 게이트 -->
-    <div id="login-screen" class="min-h-screen flex items-center justify-center p-4">
-        <div class="max-w-md w-full bg-slate-900 border border-slate-800 p-10 rounded-3xl shadow-2xl text-center">
+    <!-- [1] 로그인 게이트 (보안 활성화) -->
+    <div id="login-gate" class="min-h-screen flex items-center justify-center p-4 bg-slate-950">
+        <div class="max-w-md w-full bg-slate-900 border border-slate-800 p-10 rounded-[2.5rem] shadow-2xl text-center">
             <div class="w-20 h-20 bg-sky-600 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-lg shadow-sky-500/20">
-                <i class="fas fa-terminal text-3xl text-white"></i>
+                <i class="fas fa-user-shield text-3xl text-white"></i>
             </div>
-            <h1 class="text-2xl font-black text-white mb-2 tracking-tighter">SYSTEMATIC MULTI STRATEGY</h1>
-            <p class="text-slate-500 text-xs mb-10 font-medium uppercase tracking-widest">Internal Trading Intelligence</p>
-            <button id="btn-login" class="w-full bg-white text-slate-900 font-bold py-4 rounded-xl transition-all flex items-center justify-center gap-3 hover:bg-sky-400 hover:text-white active:scale-95">
-                <i class="fab fa-google text-lg"></i> 사내 계정 접속
+            <h1 class="text-2xl font-black text-white mb-2 tracking-tighter uppercase">Prop Desk Hub Access</h1>
+            <p class="text-slate-500 text-sm mb-10 font-medium">승인된 트레이더 계정으로 접속하세요.</p>
+            <button id="btn-login" class="w-full bg-white text-slate-900 font-black py-4 rounded-2xl transition-all flex items-center justify-center gap-3 hover:bg-sky-400 hover:text-white active:scale-95">
+                <i class="fab fa-google text-lg"></i> 구글 계정으로 로그인
             </button>
-            <p class="mt-8 text-[10px] text-slate-700 font-mono tracking-tighter">AUTH_EMAILS: hongjiheon@gmail.com, venture1219@gmail.com</p>
+            <p id="auth-error" class="mt-6 text-xs text-rose-500 font-bold hidden"></p>
         </div>
     </div>
 
-    <!-- [2] 메인 레이아웃 -->
-    <div id="main-dashboard" class="hidden min-h-screen flex flex-col">
-        <!-- 상단 바 -->
-        <nav class="fixed w-full z-50 border-b border-slate-800/50 bg-[#020617]/95 backdrop-blur-md">
+    <!-- [2] 메인 레이아웃 (인증 후 표시) -->
+    <div id="app-content" class="hidden">
+        <nav class="fixed w-full z-[100] border-b border-slate-800/50 bg-[#020617]/95 backdrop-blur-md">
             <div class="max-w-[1600px] mx-auto px-6 flex justify-between h-16 items-center">
-                <div class="flex items-center gap-4">
-                    <div class="w-9 h-9 bg-sky-600 rounded-xl flex items-center justify-center shadow-md shadow-sky-500/30">
-                        <span class="text-white font-bold text-xs font-mono text-[10px]">SMS</span>
+                <div class="flex items-center gap-4 text-left">
+                    <div class="w-10 h-10 bg-sky-600 rounded-xl flex items-center justify-center shadow-lg shadow-sky-500/20">
+                        <i class="fas fa-terminal text-white text-lg"></i>
                     </div>
-                    <span class="text-lg font-black text-white tracking-tighter uppercase">Systematic Multi Strategy</span>
+                    <div>
+                        <span class="text-xl font-black text-white tracking-tighter uppercase leading-none block">Systematic Multi Strategy</span>
+                        <span class="text-[10px] text-slate-500 font-bold tracking-widest uppercase">Internal Prop Trading Hub</span>
+                    </div>
                 </div>
                 <div class="flex items-center gap-8">
-                    <div class="flex items-center gap-3">
-                        <span class="text-[11px] text-slate-500 font-mono" id="display-user-email">Loading...</span>
-                        <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                    <div class="hidden md:flex items-center gap-3 pr-6 border-r border-slate-800 font-mono text-[10px] text-slate-400">
+                        <span id="sync-status">Status: Secured</span>
+                        <div class="flex items-center gap-1.5">
+                            <div class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></div>
+                            <span id="update-timer">LIVE_CONNECTED</span>
+                        </div>
                     </div>
-                    <button id="btn-logout" class="text-[10px] text-slate-500 hover:text-rose-400 font-bold tracking-widest transition-colors uppercase">Logout</button>
+                    <div class="flex items-center gap-3">
+                        <span class="text-xs text-slate-300 font-extrabold uppercase tracking-tight" id="display-user-name">Trader</span>
+                        <button id="btn-logout" class="text-[10px] font-bold text-slate-500 hover:text-rose-400 uppercase tracking-widest transition-colors ml-2">Logout</button>
+                    </div>
                 </div>
             </div>
-            <!-- 탭 메뉴 -->
-            <div class="max-w-[1600px] mx-auto px-4 flex border-t border-slate-800/30 overflow-x-auto no-scrollbar">
-                <div class="nav-tab active" data-tab="dashboard"><i class="fas fa-th-large mr-2"></i>대시보드</div>
-                <div class="nav-tab" data-tab="performance"><i class="fas fa-chart-line mr-2"></i>운용 성과</div>
-                <div class="nav-tab" data-tab="strategy-live"><i class="fas fa-vial mr-2"></i>운용 전략</div>
-                <div class="nav-tab" data-tab="strategy-rd"><i class="fas fa-microchip mr-2"></i>개발 전략</div>
-                <div class="nav-tab" data-tab="books"><i class="fas fa-book-open mr-2"></i>관련 서적</div>
+            <div class="max-w-[1600px] mx-auto px-6 flex border-t border-slate-800/30 overflow-x-auto no-scrollbar text-left">
+                <div class="nav-tab active" data-tab="dashboard"><i class="fas fa-layer-group"></i> 대시보드</div>
+                <div class="nav-tab" data-tab="performance"><i class="fas fa-chart-line"></i> 운용 성과</div>
+                <div class="nav-tab" data-tab="strat-live"><i class="fas fa-vial"></i> OPERATION STRATEGY</div>
+                <div class="nav-tab" data-tab="references"><i class="fas fa-archive"></i> 참고 자료</div>
+                <div class="nav-tab text-sky-400 font-black" data-tab="upload"><i class="fas fa-cloud-upload-alt"></i> 업로드</div>
             </div>
         </nav>
 
-        <!-- 메인 콘텐츠 -->
-        <main class="flex-1 pt-36 pb-16 px-6 max-w-[1600px] mx-auto w-full">
-            
-            <!-- [탭] 대시보드 -->
-            <section id="tab-dashboard" class="tab-content animate-in fade-in duration-500">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-10">
-                    <div class="dashboard-card p-6 rounded-2xl border-emerald-500/20 bg-emerald-500/5">
-                        <p class="text-slate-500 text-[10px] font-bold uppercase mb-1 tracking-widest">Today's PnL Sum</p>
-                        <div class="text-3xl font-black text-emerald-400" id="dash-total-pnl">+$0</div>
+        <main class="pt-40 pb-20 px-6 max-w-[1600px] mx-auto w-full text-left">
+            <!-- [탭: 대시보드] -->
+            <section id="content-dashboard" class="tab-content">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+                    <div class="dashboard-card p-7 border-sky-500/20 bg-sky-500/5">
+                        <p class="text-slate-500 text-[10px] font-bold uppercase mb-2 tracking-widest text-left">Total Exposure (억)</p>
+                        <div class="text-4xl font-black text-white text-left" id="total-exp">181.35</div>
                     </div>
-                    <div class="dashboard-card p-6 rounded-2xl">
-                        <p class="text-slate-500 text-[10px] font-bold uppercase mb-1 tracking-widest">Active Positions</p>
-                        <div class="text-3xl font-black text-white" id="dash-pos-count">0</div>
+                    <div class="dashboard-card p-7 text-left">
+                        <p class="text-slate-500 text-[10px] font-bold uppercase mb-2 tracking-widest">Total DTD (억)</p>
+                        <div class="text-4xl font-black val-down" id="total-dtd">-0.58</div>
                     </div>
-                    <div class="dashboard-card p-6 rounded-2xl">
-                        <p class="text-slate-500 text-[10px] font-bold uppercase mb-1 tracking-widest">Risk Exposure</p>
-                        <div class="text-3xl font-black text-orange-400">Stable</div>
+                    <div class="dashboard-card p-7 text-left">
+                        <p class="text-slate-500 text-[10px] font-bold uppercase mb-2 tracking-widest">Total MTD (억)</p>
+                        <div class="text-4xl font-black val-down" id="total-mtd">-0.58</div>
                     </div>
-                    <div class="dashboard-card p-6 rounded-2xl">
-                        <p class="text-slate-500 text-[10px] font-bold uppercase mb-1 tracking-widest">Market Context</p>
-                        <div class="text-3xl font-black text-sky-400">Neutral</div>
+                    <div class="dashboard-card p-7 border-emerald-500/20 bg-emerald-500/5 text-left">
+                        <p class="text-slate-500 text-[10px] font-bold uppercase mb-2 tracking-widest">Total YTD (억)</p>
+                        <div class="text-4xl font-black val-up" id="total-ytd">+42.88</div>
                     </div>
                 </div>
 
                 <div class="grid lg:grid-cols-12 gap-10">
-                    <div class="lg:col-span-8">
-                        <div class="flex justify-between items-center mb-6">
-                            <h2 class="text-lg font-bold text-white flex items-center gap-3">
-                                <i class="fas fa-list-ul text-sky-500"></i> 실시간 포지션 상황
-                            </h2>
-                            <button onclick="toggleModal('position-modal', true)" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-xl text-[10px] font-bold tracking-widest uppercase transition-all">
-                                Update Data
-                            </button>
-                        </div>
-                        <div class="dashboard-card rounded-2xl overflow-hidden">
+                    <div class="lg:col-span-8 space-y-6">
+                        <h2 class="text-xl font-black flex items-center gap-3 uppercase tracking-tight">
+                            <i class="fas fa-table text-sky-500"></i> Performance Summary
+                        </h2>
+                        <div class="dashboard-card overflow-hidden shadow-2xl">
                             <table class="w-full text-left perf-table">
                                 <thead>
                                     <tr>
-                                        <th>Ticker</th>
-                                        <th>Side</th>
-                                        <th class="text-right">Current PnL</th>
+                                        <th class="pl-8">Strategy Group</th>
+                                        <th class="text-right">Exposure(억)</th>
+                                        <th class="text-right">DTD(억)</th>
+                                        <th class="text-right">MTD(억)</th>
+                                        <th class="text-right pr-8">YTD(억)</th>
                                     </tr>
                                 </thead>
-                                <tbody id="dash-pos-list">
-                                    <!-- Dynamic -->
-                                </tbody>
+                                <tbody id="summary-tbody"></tbody>
                             </table>
                         </div>
                     </div>
-                    <div class="lg:col-span-4 space-y-8">
-                        <div>
-                            <h2 class="text-lg font-bold text-white mb-6 flex items-center gap-3">
-                                <i class="fas fa-bolt text-rose-500 text-sm"></i> 최근 실시간 얼러트
-                            </h2>
-                            <div class="space-y-3" id="dash-alert-list">
-                                <div class="p-4 bg-slate-900/50 border-l-2 border-sky-500 rounded-xl text-[11px]">
-                                    <p class="text-slate-200 font-bold mb-1">KAU25 포지션 업데이트</p>
-                                    <p class="text-slate-500 leading-relaxed">익스포저 43.6억 확인. DTD 수익률 -0.8% 기록 중.</p>
-                                </div>
+                    <!-- Live Alert Feed (복구됨) -->
+                    <div class="lg:col-span-4 space-y-6">
+                        <h2 class="text-xl font-black flex items-center gap-3 uppercase tracking-tight">
+                            <i class="fas fa-bell text-rose-500"></i> Live Alert Feed
+                        </h2>
+                        <div class="space-y-3" id="alert-list">
+                            <div class="p-5 rounded-2xl bg-slate-900/50 border border-slate-800 border-l-4 border-sky-500 text-left">
+                                <span class="text-[9px] font-black text-sky-500 uppercase block mb-1">TradingView</span>
+                                <p class="text-xs text-slate-200 font-bold mb-1">System Connected</p>
+                                <p class="text-[10px] text-slate-500">실시간 데이터 동기화 모드 활성화됨.</p>
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- [탭] 운용 성과 -->
-            <section id="tab-performance" class="tab-content hidden animate-in fade-in duration-500">
-                <div class="grid gap-10">
-                    <div class="dashboard-card p-8 rounded-3xl overflow-hidden relative">
-                        <div class="flex justify-between items-center mb-8 relative z-10">
-                            <div>
-                                <h2 class="text-xl font-black text-white uppercase tracking-tight">Cumulative PnL Graph</h2>
-                                <p class="text-xs text-slate-500 mt-1">부서 전체 전략 합산 누적 수익 곡선 (Equity Curve)</p>
-                            </div>
-                            <div class="flex items-center gap-4">
-                                <span class="text-[10px] font-mono text-slate-500">Data Source: Excel Integration</span>
-                            </div>
-                        </div>
-                        <div class="h-[450px] w-full">
-                            <canvas id="performanceChart"></canvas>
-                        </div>
+            <!-- [탭: 운용 성과] - 개별 차트 복구 -->
+            <section id="content-performance" class="tab-content hidden space-y-12 text-left">
+                <div class="dashboard-card p-10 shadow-2xl">
+                    <div class="flex justify-between items-center mb-10">
+                        <h2 class="text-3xl font-black uppercase tracking-tighter">Total Cumulative PnL</h2>
+                        <div class="text-3xl font-black text-emerald-400 font-mono" id="perf-ytd-total">+42.88억</div>
                     </div>
+                    <div class="h-[420px]"><canvas id="totalPnlChart"></canvas></div>
+                </div>
 
-                    <div class="dashboard-card rounded-3xl overflow-hidden">
-                        <div class="bg-slate-900 px-8 py-5 border-b border-slate-800 flex justify-between items-center">
-                            <h2 class="font-black text-white uppercase tracking-widest text-sm">Strategy Profit & Loss Table</h2>
-                            <button onclick="toggleModal('performance-upload-modal', true)" class="text-[10px] text-sky-500 font-bold uppercase tracking-widest hover:underline">Sync Performance</button>
-                        </div>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left perf-table">
-                                <thead class="bg-slate-950/50">
-                                    <tr>
-                                        <th class="pl-8">Strategy Type</th>
-                                        <th>Asset</th>
-                                        <th>Fund Code</th>
-                                        <th class="text-right">Exposure (억)</th>
-                                        <th class="text-right">DTD (억)</th>
-                                        <th class="text-right">MTD (억)</th>
-                                        <th class="text-right pr-8">YTD (억)</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="perf-strategy-list" class="divide-y divide-slate-800/30">
-                                    <!-- Dynamic Excel-like Data -->
-                                </tbody>
-                            </table>
-                        </div>
+                <div class="space-y-8">
+                    <h2 class="text-xl font-black uppercase tracking-widest text-sky-500 border-b border-slate-800 pb-4">Strategy Group Performance</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="individual-charts-container">
+                        <!-- JS에서 동적 생성 -->
                     </div>
                 </div>
             </section>
 
-            <!-- [탭] 운용 전략 / 개발 전략 -->
-            <section id="tab-strategy-live" class="tab-content hidden animate-in fade-in duration-500">
-                <div class="flex justify-between items-center mb-8">
-                    <h2 class="text-xl font-black text-white uppercase"><i class="fas fa-play-circle text-emerald-500 mr-3"></i>Live Operation Strategies</h2>
-                    <button onclick="toggleModal('strategy-modal', true, 'live')" class="bg-sky-600 px-5 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest shadow-lg shadow-sky-600/20 transition-all">전략 등록</button>
+            <!-- [탭: OPERATION STRATEGY] -->
+            <section id="content-strat-live" class="tab-content hidden space-y-10 text-left">
+                <div class="flex justify-between items-end text-left">
+                    <div>
+                        <h2 class="text-4xl font-black uppercase tracking-tighter">Operation Strategy</h2>
+                        <p class="text-xs text-slate-500 mt-3 font-medium uppercase tracking-widest italic">Live Model Documentation</p>
+                    </div>
+                    <button onclick="openUploadModal()" class="bg-sky-600 hover:bg-sky-500 text-white px-8 py-3 rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-xl flex items-center gap-2 transition-all">
+                        <i class="fas fa-plus"></i> New Deployment
+                    </button>
                 </div>
-                <div id="live-strat-list" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8" id="live-strat-grid"></div>
             </section>
 
-            <section id="tab-strategy-rd" class="tab-content hidden animate-in fade-in duration-500">
-                <div class="flex justify-between items-center mb-8">
-                    <h2 class="text-xl font-black text-white uppercase"><i class="fas fa-microchip text-sky-500 mr-3"></i>R&D Pipeline</h2>
-                    <button onclick="toggleModal('strategy-modal', true, 'rd')" class="bg-slate-800 px-5 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest hover:bg-slate-700 transition-all">연구 등록</button>
+            <!-- [탭: 참고 자료] -->
+            <section id="content-references" class="tab-content hidden space-y-12 text-left">
+                <div class="flex justify-between items-end">
+                    <h2 class="text-4xl font-black uppercase tracking-tighter">Reference Materials</h2>
+                    <button onclick="openResourceModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all">
+                        <i class="fas fa-plus mr-2"></i> Add Resource
+                    </button>
                 </div>
-                <div id="rd-strat-list" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8" id="references-grid"></div>
             </section>
 
-            <!-- [탭] 관련 서적 -->
-            <section id="tab-books" class="tab-content hidden animate-in fade-in duration-500">
-                <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                    <!-- Book Card 1 -->
-                    <div class="dashboard-card p-6 rounded-3xl flex flex-col items-center text-center group">
-                        <div class="w-32 h-44 bg-slate-800 rounded-xl mb-6 shadow-2xl flex items-center justify-center text-slate-700 group-hover:bg-slate-700 transition-colors">
-                            <i class="fas fa-book text-5xl"></i>
-                        </div>
-                        <h3 class="font-bold text-white mb-2">The Complete TurtleTrader</h3>
-                        <p class="text-[11px] text-slate-500 leading-relaxed font-light mb-4">추세 추종 전략의 정수와 시스템 트레이딩의 기원</p>
-                        <button class="text-[10px] text-sky-500 font-bold uppercase tracking-widest hover:underline">View Summary</button>
+            <!-- [탭: 업로드] -->
+            <section id="content-upload" class="tab-content hidden space-y-10 text-center">
+                <div class="max-w-2xl mx-auto">
+                    <h2 class="text-3xl font-black uppercase tracking-tighter mb-4">CSV Data Sync</h2>
+                    <p class="text-slate-500 text-sm mb-10 font-medium italic">전략별 손익 시트를 CSV로 업로드하여 실시간 지표를 동기화하세요.</p>
+                    <div id="drop-zone" class="dashboard-card p-20 drop-zone flex flex-col items-center justify-center cursor-pointer group">
+                        <i class="fas fa-file-csv text-5xl text-sky-500 mb-6 group-hover:scale-110 transition-transform"></i>
+                        <p class="text-lg font-bold text-white mb-2 uppercase">Drop CSV File Here</p>
+                        <input type="file" id="file-input" accept=".csv" class="hidden">
+                        <button onclick="document.getElementById('file-input').click()" class="mt-6 bg-white text-slate-900 px-8 py-3 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-sky-400 hover:text-white transition-all">Select File</button>
                     </div>
                 </div>
             </section>
-
         </main>
     </div>
 
-    <!-- [모달] 포지션 업데이트 -->
-    <div id="position-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 modal-overlay">
-        <div class="bg-slate-900 border border-slate-800 w-full max-w-sm rounded-3xl p-8 shadow-2xl">
-            <h3 class="text-lg font-black text-white mb-6 uppercase tracking-widest">Update Live Position</h3>
-            <div class="space-y-4">
-                <input type="text" id="pos-asset" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-xs uppercase text-slate-200" placeholder="Ticker (e.g. KAU25)">
-                <select id="pos-side" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-xs text-slate-200">
-                    <option value="LONG">LONG (매수)</option>
-                    <option value="SHORT">SHORT (매도)</option>
-                    <option value="FLAT">FLAT (중립)</option>
-                </select>
-                <input type="text" id="pos-pnl" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-xs text-slate-200" placeholder="PnL (e.g. +1.42%)">
-                <button id="btn-submit-position" class="w-full bg-sky-600 hover:bg-sky-500 text-white font-black py-4 rounded-xl mt-4 transition-all uppercase tracking-widest text-[11px]">Sync Now</button>
-                <button onclick="toggleModal('position-modal', false)" class="w-full text-slate-600 text-[10px] font-bold uppercase tracking-widest mt-2 hover:text-white">Cancel</button>
-            </div>
-        </div>
-    </div>
-
     <!-- [모달] 전략 등록 -->
-    <div id="strategy-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 modal-overlay">
-        <div class="bg-slate-900 border border-slate-800 w-full max-w-xl rounded-3xl p-10 shadow-2xl">
-            <h3 class="text-xl font-black text-white mb-8 uppercase tracking-widest">Register Intelligence</h3>
-            <div class="space-y-5">
-                <input type="hidden" id="strat-modal-type">
-                <input type="text" id="strat-title" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-xs text-slate-200 outline-none focus:border-sky-500" placeholder="전략 제목">
-                <textarea id="strat-content" rows="8" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-xs text-slate-200 outline-none focus:border-sky-500" placeholder="전략 가설, 로직, 기대 수익 및 리스크 관리 계획을 상세히 기술하세요."></textarea>
-                <button id="btn-submit-strategy" class="w-full bg-sky-600 hover:bg-sky-500 text-white font-black py-4 rounded-xl mt-4 transition-all uppercase tracking-widest text-[11px]">Upload Alpha</button>
+    <div id="upload-modal" class="hidden fixed inset-0 flex items-center justify-center p-4 modal-overlay overflow-y-auto">
+        <div class="bg-[#0f172a] border border-slate-800 w-full max-w-2xl rounded-[2.5rem] p-12 shadow-2xl my-10 animate-in fade-in zoom-in duration-300 text-left">
+            <div class="flex justify-between items-start mb-8 text-left">
+                <h3 class="text-3xl font-black text-white uppercase tracking-tighter">Deploy Strategy</h3>
+                <button onclick="closeModal()" class="text-slate-600 hover:text-white text-2xl transition-colors"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="space-y-6">
+                <div class="grid grid-cols-2 gap-8">
+                    <div class="space-y-2"><label class="text-[10px] font-black text-slate-500 uppercase tracking-widest text-left block">Group</label>
+                    <select id="in-group" class="w-full rounded-2xl p-4 text-xs font-bold outline-none text-left"><option>Trend</option><option>Mean Reversion</option><option>Multi</option><option>Stat-L/S</option><option>Arbitrage</option></select></div>
+                    <div class="space-y-2"><label class="text-[10px] font-black text-slate-500 uppercase tracking-widest text-left block">Asset</label><input type="text" id="in-asset" class="w-full rounded-2xl p-4 text-xs font-bold" placeholder="e.g. BTCUSD"></div>
+                </div>
+                <div class="space-y-2"><label class="text-[10px] font-black text-slate-500 uppercase tracking-widest text-left block">Title</label><input type="text" id="in-title" class="w-full rounded-2xl p-4 text-xs font-bold" placeholder="Strategy Name"></div>
+                <div class="space-y-2 text-left">
+                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest text-left block">Custom Parameters</label>
+                    <div id="param-input-container" class="space-y-2"><div class="flex gap-3"><input type="text" placeholder="지표명" class="w-1/2 rounded-2xl p-4 text-xs font-bold param-key"><input type="text" placeholder="값" class="w-1/2 rounded-2xl p-4 text-xs font-bold font-mono param-val"></div></div>
+                    <button type="button" onclick="addParamRow()" class="text-[9px] font-black text-sky-500 tracking-widest uppercase hover:underline">+ Add Parameter</button>
+                </div>
+                <div class="space-y-2 text-left"><label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block">Logic</label><textarea id="in-desc" rows="4" class="w-full rounded-2xl p-5 text-xs font-medium leading-relaxed"></textarea></div>
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="border border-dashed border-slate-700 rounded-2xl p-6 text-center hover:border-sky-500 cursor-pointer group transition-all"><i class="fas fa-image text-slate-600 mb-1"></i><p class="text-[8px] text-slate-600 font-bold uppercase">Chart</p></div>
+                    <div class="border border-dashed border-slate-700 rounded-2xl p-6 text-center hover:border-emerald-500 cursor-pointer transition-all"><i class="fas fa-file-pdf text-slate-600 mb-1"></i><p class="text-[8px] text-slate-600 font-bold uppercase">Backtest</p></div>
+                </div>
+                <button onclick="handleStrategySubmit()" class="w-full bg-sky-600 hover:bg-sky-500 text-white font-black py-5 rounded-2xl text-xs uppercase tracking-widest shadow-2xl mt-4">Deploy Alpha Asset</button>
             </div>
         </div>
     </div>
 
-    <!-- Firebase & Logic -->
+    <!-- [모달] 참고 자료 등록 (첨부파일 영역 포함) -->
+    <div id="resource-modal" class="hidden fixed inset-0 flex items-center justify-center p-4 modal-overlay overflow-y-auto">
+        <div class="bg-[#0f172a] border border-slate-800 w-full max-w-xl rounded-[2.5rem] p-12 shadow-2xl animate-in fade-in zoom-in duration-300 text-left">
+            <div class="flex justify-between items-start mb-8 text-left">
+                <h3 class="text-3xl font-black text-white uppercase tracking-tighter">Add Resource</h3>
+                <button onclick="closeResourceModal()" class="text-slate-600 hover:text-white text-2xl transition-colors"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="space-y-6 text-left">
+                <div class="space-y-2"><label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block">Category</label><select id="res-cat" class="w-full rounded-2xl p-4 text-xs font-bold outline-none"><option value="book">Book</option><option value="blog">Blog</option><option value="paper">Paper</option></select></div>
+                <div class="space-y-2"><label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block">Title</label><input type="text" id="res-title" class="w-full rounded-2xl p-4 text-xs font-bold"></div>
+                <div class="space-y-2"><label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block">URL</label><input type="text" id="res-url" class="w-full rounded-2xl p-4 text-xs font-bold font-mono"></div>
+                <div class="space-y-2"><label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block">Summary</label><textarea id="res-desc" rows="4" class="w-full rounded-2xl p-5 text-xs font-medium"></textarea></div>
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block"><i class="fas fa-paperclip mr-1"></i> Attach Material</label>
+                    <div class="border border-dashed border-slate-700 rounded-2xl p-8 text-center hover:border-sky-500 cursor-pointer group transition-all">
+                        <i class="fas fa-cloud-upload-alt text-slate-700 group-hover:text-sky-500 text-2xl mb-2"></i>
+                        <p class="text-[9px] text-slate-600 font-bold uppercase text-center">Click to Select Files</p>
+                    </div>
+                </div>
+                <button onclick="handleResourceSubmit()" class="w-full bg-white text-slate-900 font-black py-5 rounded-2xl text-xs uppercase tracking-widest shadow-xl mt-4">Save to Hub</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK & Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, addDoc, collection, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Firebase Configuration
+        // Firebase Config (사용자 제공 정보 기반)
         const firebaseConfig = {
             apiKey: "AIzaSyDcB3T2qsVXTAQcvyCmTLOs3oG4-JKQXb8",
             authDomain: "systematic-multi-strategy.firebaseapp.com",
@@ -263,181 +272,245 @@
         };
 
         const ALLOWED_EMAILS = ["hongjiheon@gmail.com", "venture1219@gmail.com"];
-        const APP_ID = 'prop-desk-hub';
-
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        const db = getFirestore(app);
         const provider = new GoogleAuthProvider();
 
-        // 탭 제어
-        document.querySelectorAll('.nav-tab').forEach(tab => {
-            tab.onclick = () => {
-                const target = tab.getAttribute('data-tab');
-                document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
-                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-                document.getElementById('tab-' + target).classList.remove('hidden');
-                tab.classList.add('active');
-                if(target === 'performance') initChart();
-            }
-        });
-
-        // 인증 로직
+        const loginGate = document.getElementById('login-gate');
+        const appContent = document.getElementById('app-content');
         const btnLogin = document.getElementById('btn-login');
         const btnLogout = document.getElementById('btn-logout');
-        
+        const errorEl = document.getElementById('auth-error');
+
+        // 인증 로직
         btnLogin.onclick = async () => {
-            try { await signInWithPopup(auth, provider); } catch (e) { console.error(e); }
+            try {
+                const result = await signInWithPopup(auth, provider);
+                if (!ALLOWED_EMAILS.includes(result.user.email)) {
+                    errorEl.innerText = "비인가 계정입니다: " + result.user.email;
+                    errorEl.classList.remove('hidden');
+                    await signOut(auth);
+                }
+            } catch (e) {
+                errorEl.innerText = "로그인 오류: " + e.message;
+                errorEl.classList.remove('hidden');
+            }
         };
+
         btnLogout.onclick = () => signOut(auth);
 
         onAuthStateChanged(auth, (user) => {
             if (user && ALLOWED_EMAILS.includes(user.email)) {
-                document.getElementById('login-screen').classList.add('hidden');
-                document.getElementById('main-dashboard').classList.remove('hidden');
-                document.getElementById('display-user-email').textContent = user.email;
-                startDataSync();
+                loginGate.classList.add('hidden');
+                appContent.classList.remove('hidden');
+                document.getElementById('display-user-name').innerText = user.email.split('@')[0];
+                updateAllUI();
             } else {
-                document.getElementById('login-screen').classList.remove('hidden');
-                document.getElementById('main-dashboard').classList.add('hidden');
-                if(user) { alert("Access Denied."); signOut(auth); }
+                loginGate.classList.remove('hidden');
+                appContent.classList.add('hidden');
             }
         });
 
-        // 실시간 데이터 동기화
-        function startDataSync() {
-            // 포지션 데이터
-            onSnapshot(collection(db, 'artifacts', APP_ID, 'public', 'data', 'positions'), (snap) => {
-                const list = document.getElementById('dash-pos-list');
-                document.getElementById('dash-pos-count').textContent = snap.size;
-                list.innerHTML = '';
-                snap.docs.forEach(doc => {
-                    const d = doc.data();
-                    const isUp = d.pnl.includes('+');
-                    list.insertAdjacentHTML('beforeend', `
-                        <tr>
-                            <td class="font-black text-white pl-8 uppercase">${d.asset}</td>
-                            <td class="font-bold ${d.side === 'LONG' ? 'status-up' : 'status-down'}">${d.side}</td>
-                            <td class="text-right pr-8 font-mono font-bold ${isUp ? 'status-up' : 'status-down'}">${d.pnl}</td>
-                        </tr>
-                    `);
-                });
-            });
+        // --- 데이터 상태 ---
+        window.STRATEGY_DATA = [
+            { name: "Trend", exp: 78.36, dtd: -1.55, mtd: -1.55, ytd: 32.28, color: '#38bdf8' },
+            { name: "Mean Reversion", exp: 0.00, dtd: 0.01, mtd: 0.01, ytd: 5.09, color: '#a855f7' },
+            { name: "Multi", exp: 0.00, dtd: 0.10, mtd: 0.10, ytd: -0.24, color: '#94a3b8' },
+            { name: "Stat-L/S", exp: 76.09, dtd: 0.50, mtd: 0.50, ytd: 0.65, color: '#fb923c' },
+            { name: "Arbitrage", exp: 26.90, dtd: 0.36, mtd: 0.36, ytd: 5.10, color: '#10b981' }
+        ];
 
-            // 전략 데이터 (Live / RD 구분)
-            onSnapshot(collection(db, 'artifacts', APP_ID, 'public', 'data', 'strategies'), (snap) => {
-                const liveList = document.getElementById('live-strat-list');
-                const rdList = document.getElementById('rd-strat-list');
-                liveList.innerHTML = ''; rdList.innerHTML = '';
+        window.STRATEGIES = [
+            { id: 1, group: 'Trend', asset: 'KAU25', title: 'Carbon Momentum LP', params: [{k: 'Length', v: '20'}, {k: 'ATR Mult', v: '2.5'}], author: 'hongjiheon', desc: '배출권 유동성 공급 전략.', hasImage: true }
+        ];
 
-                snap.docs.forEach(doc => {
-                    const d = doc.data();
-                    const card = `
-                        <div class="dashboard-card p-8 rounded-3xl relative overflow-hidden group">
-                            <div class="absolute top-0 right-0 w-32 h-32 bg-sky-600/5 rounded-full -mr-16 -mt-16 transition-all group-hover:bg-sky-600/10"></div>
-                            <h3 class="font-black text-white text-lg mb-3 tracking-tighter">${d.title}</h3>
-                            <p class="text-[11px] text-slate-500 leading-relaxed font-light mb-8 line-clamp-4">${d.content}</p>
-                            <div class="flex justify-between items-center text-[9px] text-slate-600 font-bold border-t border-slate-800 pt-4 uppercase tracking-widest font-mono">
-                                <span><i class="far fa-user mr-1 text-sky-500"></i>${d.authorEmail.split('@')[0]}</span>
-                                <span>${d.timestamp ? new Date(d.timestamp.seconds * 1000).toLocaleDateString() : ''}</span>
-                            </div>
+        window.REFERENCES = [
+            { cat: 'book', title: 'The Complete TurtleTrader', desc: '추세 추종의 바이블.', icon: 'fa-book-open', url: '#' },
+            { cat: 'blog', title: 'QuantPedia', desc: '퀀트 리서치 아카이브.', icon: 'fa-rss', url: '#' }
+        ];
+
+        // --- UI 업데이트 엔진 ---
+        window.updateAllUI = () => {
+            renderSummary();
+            renderDashboardCards();
+            renderStrategies();
+            renderReferences();
+            initCharts();
+            initUploadEngine();
+        };
+
+        function renderDashboardCards() {
+            const total = window.STRATEGY_DATA.reduce((acc, curr) => ({
+                exp: acc.exp + curr.exp, dtd: acc.dtd + curr.dtd, mtd: acc.mtd + curr.mtd, ytd: acc.ytd + curr.ytd
+            }), { exp: 0, dtd: 0, mtd: 0, ytd: 0 });
+            document.getElementById('total-exp').innerText = total.exp.toFixed(2);
+            document.getElementById('total-dtd').innerText = (total.dtd >= 0 ? '+' : '') + total.dtd.toFixed(2);
+            document.getElementById('total-dtd').className = `text-4xl font-black ${total.dtd >= 0 ? 'val-up' : 'val-down'}`;
+            document.getElementById('total-mtd').innerText = (total.mtd >= 0 ? '+' : '') + total.mtd.toFixed(2);
+            document.getElementById('total-mtd').className = `text-4xl font-black ${total.mtd >= 0 ? 'val-up' : 'val-down'}`;
+            document.getElementById('total-ytd').innerText = (total.ytd >= 0 ? '+' : '') + total.ytd.toFixed(2);
+            document.getElementById('total-ytd').className = `text-4xl font-black ${total.ytd >= 0 ? 'val-up' : 'val-down'}`;
+            document.getElementById('perf-ytd-total').innerText = (total.ytd >= 0 ? '+' : '') + total.ytd.toFixed(2) + '억';
+        }
+
+        function renderSummary() {
+            const tbody = document.getElementById('summary-tbody');
+            tbody.innerHTML = window.STRATEGY_DATA.map(s => `
+                <tr class="hover:bg-slate-800/40 transition-colors">
+                    <td class="pl-8 font-black text-white uppercase tracking-tighter border-l-4" style="border-left-color: ${s.color}">${s.name}</td>
+                    <td class="text-right font-mono text-slate-400 font-bold">${s.exp.toFixed(2)}</td>
+                    <td class="text-right font-mono font-black ${s.dtd >= 0 ? 'val-up' : 'val-down'}">${(s.dtd >= 0 ? '+' : '') + s.dtd.toFixed(2)}</td>
+                    <td class="text-right font-mono font-black ${s.mtd >= 0 ? 'val-up' : 'val-down'}">${(s.mtd >= 0 ? '+' : '') + s.mtd.toFixed(2)}</td>
+                    <td class="text-right pr-8 font-mono font-black ${s.ytd >= 0 ? 'val-up' : 'val-down'}">${(s.ytd >= 0 ? '+' : '') + s.ytd.toFixed(2)}</td>
+                </tr>
+            `).join('');
+        }
+
+        function renderStrategies() {
+            const grid = document.getElementById('live-strat-grid');
+            grid.innerHTML = window.STRATEGIES.map(s => `
+                <div class="dashboard-card p-10 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-center mb-8">
+                            <span class="text-[9px] font-black uppercase px-2 py-1 bg-slate-900 border border-slate-800 text-sky-400 rounded-md">${s.group}</span>
+                            <span class="text-[9px] font-black uppercase text-slate-600 tracking-widest">${s.author}</span>
                         </div>
-                    `;
-                    if(d.type === 'live') liveList.insertAdjacentHTML('beforeend', card);
-                    else rdList.insertAdjacentHTML('beforeend', card);
-                });
-            });
+                        <h3 class="text-xl font-black text-white tracking-tighter leading-tight mb-2 uppercase text-left">${s.title}</h3>
+                        <p class="text-[10px] font-bold text-slate-500 mb-6 uppercase tracking-widest underline decoration-sky-500/40 text-left">Asset: ${s.asset}</p>
+                        <div class="flex flex-wrap gap-2 mb-8">${s.params.map(p => `<span class="param-tag">${p.k.toUpperCase()}: ${p.v}</span>`).join('')}</div>
+                        <p class="text-[13px] text-slate-400 leading-relaxed font-medium mb-10 line-clamp-4 text-left">${s.desc}</p>
+                    </div>
+                    <div class="pt-8 border-t border-slate-800/50 flex justify-between items-center">
+                        <div class="flex gap-2">
+                            ${s.hasImage ? '<div class="w-7 h-7 rounded-lg bg-slate-900 flex items-center justify-center text-sky-500 border border-slate-800"><i class="fas fa-image text-[11px]"></i></div>' : ''}
+                            <div class="w-7 h-7 rounded-lg bg-slate-900 flex items-center justify-center text-emerald-500 border border-slate-800"><i class="fas fa-file-pdf text-[11px]"></i></div>
+                        </div>
+                        <button class="text-[9px] font-black text-slate-500 uppercase hover:text-white transition-all tracking-[0.15em]">Report View <i class="fas fa-chevron-right ml-1"></i></button>
+                    </div>
+                </div>
+            `).join('');
+        }
 
-            // 성과 데이터 (Mock - 실제 구축 시 Firestore에 엑셀 데이터를 업로드하는 로직 구현 가능)
-            const perfList = document.getElementById('perf-strategy-list');
-            const mockPerfData = [
-                { type: "Trend Maker", asset: "KAU", code: "20300", exp: 43.66, dtd: -0.81, mtd: -0.81, ytd: 20.31 },
-                { type: "VCM Alpha", asset: "VER", code: "20400", exp: 19.95, dtd: 0.00, mtd: 0.00, ytd: 6.37 },
-                { type: "Ab-Arb Master", asset: "ETF", code: "10210", exp: 58.60, dtd: 0.05, mtd: 0.05, ytd: 2.01 },
-                { type: "Quant Intra", asset: "KOSPI", code: "10208", exp: 0.00, dtd: -0.43, mtd: -0.43, ytd: 1.62 }
-            ];
+        function renderReferences() {
+            const grid = document.getElementById('references-grid');
+            grid.innerHTML = window.REFERENCES.map(r => `
+                <div class="dashboard-card p-10 flex flex-col items-center text-center group h-full">
+                    <div class="w-32 h-44 bg-slate-900 rounded-2xl mb-8 shadow-2xl flex items-center justify-center text-slate-800 border border-slate-800 group-hover:border-sky-500 transition-all"><i class="fas ${r.icon} text-5xl group-hover:text-sky-500"></i></div>
+                    <span class="ref-badge ref-${r.cat} mb-4">${r.cat}</span>
+                    <h3 class="font-black text-white mb-2 uppercase tracking-tighter text-xs text-center">${r.title}</h3>
+                    <p class="text-[11px] text-slate-600 leading-relaxed font-medium text-center line-clamp-3">${r.desc}</p>
+                    <a href="${r.url}" class="mt-8 text-[9px] font-black text-sky-500 uppercase tracking-widest hover:underline transition-colors">View Link</a>
+                </div>
+            `).join('');
+        }
+
+        // --- 차트 엔진 (전략별 차트 복구) ---
+        function initCharts() {
+            const totalYTD = window.STRATEGY_DATA.reduce((a, b) => a + b.ytd, 0);
+            createChart('totalPnlChart', [totalYTD*0.2, totalYTD*0.5, totalYTD*0.4, totalYTD*0.7, totalYTD*0.9, totalYTD*0.8, totalYTD], '#38bdf8', true);
             
-            perfList.innerHTML = '';
-            mockPerfData.forEach(p => {
-                perfList.insertAdjacentHTML('beforeend', `
-                    <tr class="hover:bg-slate-800/30 transition-colors">
-                        <td class="pl-8 font-black text-sky-400 uppercase tracking-tighter">${p.type}</td>
-                        <td class="font-bold text-slate-300">${p.asset}</td>
-                        <td class="font-mono text-slate-600 text-[10px]">${p.code}</td>
-                        <td class="text-right font-mono text-slate-400">${p.exp.toFixed(2)}</td>
-                        <td class="text-right font-mono font-bold ${p.dtd >= 0 ? 'status-up' : 'status-down'}">${p.dtd >= 0 ? '+' : ''}${p.dtd.toFixed(2)}</td>
-                        <td class="text-right font-mono font-bold ${p.mtd >= 0 ? 'status-up' : 'status-down'}">${p.mtd >= 0 ? '+' : ''}${p.mtd.toFixed(2)}</td>
-                        <td class="text-right pr-8 font-mono font-bold ${p.ytd >= 0 ? 'status-up' : 'status-down'}">${p.ytd >= 0 ? '+' : ''}${p.ytd.toFixed(2)}</td>
-                    </tr>
+            const individualContainer = document.getElementById('individual-charts-container');
+            individualContainer.innerHTML = '';
+            
+            window.STRATEGY_DATA.forEach(s => {
+                const safeName = s.name.replace(/[^a-zA-Z]/g, '').toLowerCase();
+                const canvasId = `chart${safeName}`;
+                
+                individualContainer.insertAdjacentHTML('beforeend', `
+                    <div class="dashboard-card p-6">
+                        <div class="flex justify-between mb-4"><span class="text-xs font-bold uppercase tracking-widest" style="color:${s.color}">${s.name}</span><span class="text-xs font-mono ${(s.ytd>=0?'val-up':'val-down')}">${(s.ytd>=0?'+':'') + s.ytd.toFixed(2)}억</span></div>
+                        <div class="h-[180px]"><canvas id="${canvasId}"></canvas></div>
+                    </div>
                 `);
+                
+                setTimeout(() => {
+                    createChart(canvasId, [s.ytd*0.3, s.ytd*0.6, s.ytd*0.5, s.ytd*0.8, s.ytd*0.9, s.ytd], s.color);
+                }, 50);
             });
         }
 
-        // PnL 차트 초기화 (엑셀 데이터 기반 시뮬레이션)
-        function initChart() {
-            const ctx = document.getElementById('performanceChart').getContext('2d');
-            if(window.pnlChartInstance) window.pnlChartInstance.destroy();
-            
-            const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-            gradient.addColorStop(0, 'rgba(56, 189, 248, 0.2)');
-            gradient.addColorStop(1, 'rgba(56, 189, 248, 0)');
-
-            window.pnlChartInstance = new Chart(ctx, {
+        function createChart(id, data, color, fill = false) {
+            const ctx = document.getElementById(id)?.getContext('2d');
+            if(!ctx) return;
+            if(window[`instance_${id}`]) window[`instance_${id}`].destroy();
+            window[`instance_${id}`] = new Chart(ctx, {
                 type: 'line',
-                data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-                    datasets: [{
-                        label: 'Equity Curve (억)',
-                        data: [1.2, 3.5, 2.8, 5.2, 8.4, 7.9, 12.3, 16.1, 15.5, 19.4, 23.2, 28.5],
-                        borderColor: '#38bdf8',
-                        borderWidth: 4,
-                        backgroundColor: gradient,
-                        fill: true,
-                        tension: 0.4,
-                        pointRadius: 0,
-                        pointHoverRadius: 6,
-                        pointBackgroundColor: '#38bdf8'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false } },
-                    scales: {
-                        y: { grid: { color: 'rgba(255,255,255,0.05)' }, border: { display: false }, ticks: { color: '#475569', font: { family: 'monospace', size: 10 } } },
-                        x: { grid: { display: false }, border: { display: false }, ticks: { color: '#475569', font: { family: 'monospace', size: 10 } } }
-                    }
-                }
+                data: { labels: data.map((_, i) => i), datasets: [{ data, borderColor: color, borderWidth: fill ? 4 : 2, backgroundColor: fill ? `${color}22` : 'transparent', fill, tension: 0.4, pointRadius: 0 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid: { color: 'rgba(255,255,255,0.02)' }, ticks: { color: '#475569', font: { size: 9 } } }, x: { display: false } } }
             });
         }
 
-        // 모달 데이터 제출
-        document.getElementById('btn-submit-position').onclick = async () => {
-            const asset = document.getElementById('pos-asset').value.toUpperCase();
-            const side = document.getElementById('pos-side').value;
-            const pnl = document.getElementById('pos-pnl').value;
-            if(!asset || !pnl) return;
-            await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'positions', asset), { asset, side, pnl, timestamp: serverTimestamp() });
-            toggleModal('position-modal', false);
+        function initUploadEngine() {
+            const dropZone = document.getElementById('drop-zone');
+            if(!dropZone) return;
+            dropZone.ondragover = (e) => { e.preventDefault(); dropZone.classList.add('active'); };
+            dropZone.ondragleave = () => dropZone.classList.remove('active');
+            dropZone.ondrop = (e) => { e.preventDefault(); dropZone.classList.remove('active'); if(e.dataTransfer.files[0]) parseCSV(e.dataTransfer.files[0]); };
+            document.getElementById('file-input').onchange = (e) => { if(e.target.files[0]) parseCSV(e.target.files[0]); };
+        }
+
+        function parseCSV(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const rows = e.target.result.split('\n').map(row => row.split(','));
+                const newStats = [...window.STRATEGY_DATA];
+                rows.forEach(row => {
+                    const target = newStats.find(s => row[0]?.trim().toLowerCase().includes(s.name.toLowerCase()));
+                    if(target && (row[0]?.trim() !== "" || row[1]?.trim().toLowerCase().includes('total'))) {
+                        const exp = parseFloat(row[6]), dtd = parseFloat(row[7]), mtd = parseFloat(row[8]), ytd = parseFloat(row[9]);
+                        if(!isNaN(exp)) target.exp = exp; if(!isNaN(dtd)) target.dtd = dtd; if(!isNaN(mtd)) target.mtd = mtd; if(!isNaN(ytd)) target.ytd = ytd;
+                    }
+                });
+                window.STRATEGY_DATA = newStats; updateAllUI();
+                addAlert('Data Synced', `${file.name}가 성공적으로 반영되었습니다.`);
+                document.querySelector('.nav-tab[data-tab="dashboard"]').click();
+            };
+            reader.readAsText(file);
+        }
+
+        function addAlert(title, text) {
+            const container = document.getElementById('alert-list');
+            if(!container) return;
+            container.insertAdjacentHTML('afterbegin', `<div class="p-5 rounded-2xl bg-sky-600/10 border border-sky-500/30 border-l-4 border-sky-500 text-left"><span class="text-[9px] font-black text-sky-500 uppercase block mb-1">Alert</span><p class="text-xs text-slate-200 font-bold mb-1">${title}</p><p class="text-[10px] text-slate-500">${text}</p></div>`);
+        }
+
+        // --- 전역 함수 정의 (버튼 및 모달 제어) ---
+        window.openUploadModal = () => document.getElementById('upload-modal').classList.remove('hidden');
+        window.closeModal = () => document.getElementById('upload-modal').classList.add('hidden');
+        window.openResourceModal = () => document.getElementById('resource-modal').classList.remove('hidden');
+        window.closeResourceModal = () => document.getElementById('resource-modal').classList.add('hidden');
+        window.addParamRow = () => {
+            const container = document.getElementById('param-input-container');
+            const div = document.createElement('div'); div.className = 'flex gap-3 text-left mb-2';
+            div.innerHTML = `<input type="text" placeholder="지표명" class="w-1/2 rounded-2xl p-4 text-xs font-bold param-key text-left"><input type="text" placeholder="값" class="w-1/2 rounded-2xl p-4 text-xs font-bold font-mono param-val text-left">`;
+            container.appendChild(div);
+        };
+        window.handleStrategySubmit = () => {
+            const group = document.getElementById('in-group').value, asset = document.getElementById('in-asset').value, title = document.getElementById('in-title').value, desc = document.getElementById('in-desc').value;
+            const params = Array.from(document.querySelectorAll('.param-key')).map((k, i) => ({ k: k.value, v: document.querySelectorAll('.param-val')[i].value })).filter(p => p.k);
+            if(!title || !asset) return alert("제목과 자산을 입력하세요.");
+            window.STRATEGIES.unshift({ id: Date.now(), group, asset, title, params, desc, author: 'hongjiheon', hasImage: true });
+            renderStrategies(); closeModal();
+        };
+        window.handleResourceSubmit = () => {
+            const cat = document.getElementById('res-cat').value, title = document.getElementById('res-title').value, url = document.getElementById('res-url').value, desc = document.getElementById('res-desc').value;
+            if(!title) return alert("제목을 입력하세요.");
+            const iconMap = { book: 'fa-book-open', blog: 'fa-rss', paper: 'fa-graduation-cap' };
+            window.REFERENCES.unshift({ cat, title, url, desc, icon: iconMap[cat] || 'fa-link' });
+            renderReferences(); closeResourceModal();
         };
 
-        document.getElementById('btn-submit-strategy').onclick = async () => {
-            const type = document.getElementById('strat-modal-type').value;
-            const title = document.getElementById('strat-title').value;
-            const content = document.getElementById('strat-content').value;
-            if(!title || !content) return;
-            await addDoc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'strategies'), {
-                type, title, content, authorEmail: auth.currentUser.email, timestamp: serverTimestamp()
-            });
-            toggleModal('strategy-modal', false);
-            document.getElementById('strat-title').value = '';
-            document.getElementById('strat-content').value = '';
-        };
-
-        window.toggleModal = (id, show, type = '') => {
-            document.getElementById(id).classList.toggle('hidden', !show);
-            if(id === 'strategy-modal') document.getElementById('strat-modal-type').value = type;
-        };
+        // 탭 전환 이벤트
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.onclick = () => {
+                const target = tab.dataset.tab;
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                document.getElementById(`content-${target}`).classList.remove('hidden');
+                tab.classList.add('active');
+                if(target === 'performance') initCharts();
+            }
+        });
 
     </script>
 </body>
