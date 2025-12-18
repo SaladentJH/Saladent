@@ -24,7 +24,7 @@
         .param-tag { background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.15); color: #7dd3fc; padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; font-family: monospace; }
         .modal-overlay { background: rgba(2, 6, 23, 0.95); backdrop-filter: blur(12px); z-index: 1000; }
         input, textarea, select { background: #020617 !important; border: 1px solid #1e293b !important; color: #f1f5f9 !important; }
-        input:focus, textarea:focus { border-color: #38bdf8 !important; outline: none; }
+        input:focus, textarea:focus, select:focus { border-color: #38bdf8 !important; outline: none; }
         .drop-zone { border: 2px dashed #1e293b; transition: all 0.3s; }
         .drop-zone.active { border-color: #38bdf8; background: rgba(56, 189, 248, 0.05); }
         .ref-badge { padding: 2px 8px; border-radius: 99px; font-size: 9px; font-weight: 800; text-transform: uppercase; }
@@ -63,7 +63,7 @@
                         <span class="text-[10px] text-slate-500 font-bold tracking-widest uppercase">Internal Prop Trading Hub</span>
                     </div>
                 </div>
-                <div class="flex items-center gap-8">
+                <div class="flex items-center gap-8 text-left">
                     <div class="hidden md:flex items-center gap-3 pr-6 border-r border-slate-800 font-mono text-[10px] text-slate-400">
                         <span id="sync-status">Status: Secured</span>
                         <div class="flex items-center gap-1.5">
@@ -90,23 +90,25 @@
             <!-- [탭: 대시보드] -->
             <section id="content-dashboard" class="tab-content">
                 <div class="mb-6">
-                    <h3 class="text-xs font-black text-slate-500 uppercase tracking-[0.3em] mb-2">Total Summary</h3>
-                    <div class="h-px bg-slate-800 w-full"></div>
+                    <h2 class="text-xl font-black text-white uppercase tracking-tight flex items-center gap-3">
+                        <i class="fas fa-chart-pie text-sky-500"></i> Total Summary
+                    </h2>
+                    <div class="h-px bg-slate-800 w-full mt-4"></div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
-                    <div class="dashboard-card p-7 border-sky-500/20 bg-sky-500/5">
-                        <p class="text-slate-500 text-[10px] font-bold uppercase mb-2 tracking-widest text-left">Total Exposure (억)</p>
-                        <div class="text-4xl font-black text-white text-left" id="total-exp">0.00</div>
+                    <div class="dashboard-card p-7 border-sky-500/20 bg-sky-500/5 text-left">
+                        <p class="text-slate-500 text-[10px] font-bold uppercase mb-2 tracking-widest">Total Exposure (억)</p>
+                        <div class="text-4xl font-black text-white" id="total-exp">0.00</div>
                     </div>
-                    <div class="dashboard-card p-7">
+                    <div class="dashboard-card p-7 text-left">
                         <p class="text-slate-500 text-[10px] font-bold uppercase mb-2 tracking-widest">Total DTD (억)</p>
                         <div class="text-4xl font-black val-down" id="total-dtd">0.00</div>
                     </div>
-                    <div class="dashboard-card p-7">
+                    <div class="dashboard-card p-7 text-left">
                         <p class="text-slate-500 text-[10px] font-bold uppercase mb-2 tracking-widest">Total MTD (억)</p>
                         <div class="text-4xl font-black val-down" id="total-mtd">0.00</div>
                     </div>
-                    <div class="dashboard-card p-7 border-emerald-500/20 bg-emerald-500/5">
+                    <div class="dashboard-card p-7 border-emerald-500/20 bg-emerald-500/5 text-left">
                         <p class="text-slate-500 text-[10px] font-bold uppercase mb-2 tracking-widest">Total YTD (억)</p>
                         <div class="text-4xl font-black val-up" id="total-ytd">0.00</div>
                     </div>
@@ -114,7 +116,7 @@
 
                 <div class="grid lg:grid-cols-12 gap-10">
                     <div class="lg:col-span-8 space-y-6">
-                        <h2 class="text-xl font-black flex items-center gap-3 uppercase tracking-tight">
+                        <h2 class="text-xl font-black flex items-center gap-3 uppercase tracking-tight text-left">
                             <i class="fas fa-table text-sky-500"></i> Performance Summary
                         </h2>
                         <div class="dashboard-card overflow-hidden shadow-2xl">
@@ -132,12 +134,17 @@
                             </table>
                         </div>
                     </div>
-                    <div class="lg:col-span-4 space-y-6">
+                    <!-- Live Alert Feed -->
+                    <div class="lg:col-span-4 space-y-6 text-left">
                         <h2 class="text-xl font-black flex items-center gap-3 uppercase tracking-tight">
                             <i class="fas fa-bell text-rose-500"></i> Live Alert Feed
                         </h2>
                         <div class="space-y-3" id="alert-list">
-                            <!-- Alerts -->
+                            <div class="p-5 rounded-2xl bg-slate-900/50 border border-slate-800 border-l-4 border-sky-500">
+                                <span class="text-[9px] font-black text-sky-500 uppercase block mb-1">TradingView</span>
+                                <p class="text-xs text-slate-200 font-bold mb-1">Signal Stream Active</p>
+                                <p class="text-[10px] text-slate-500">실시간 데이터 수신 대기 중...</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -160,10 +167,10 @@
 
             <!-- [탭: 운용 전략] -->
             <section id="content-strat-live" class="tab-content hidden space-y-10 text-left">
-                <div class="flex justify-between items-end text-left">
+                <div class="flex justify-between items-end">
                     <div>
-                        <h2 class="text-4xl font-black uppercase tracking-tighter">Operation Strategy</h2>
-                        <p class="text-xs text-slate-500 mt-3 font-medium uppercase tracking-widest italic">Live Model Documentation</p>
+                        <h2 class="text-4xl font-black uppercase tracking-tighter">운용 전략</h2>
+                        <p class="text-xs text-slate-500 mt-3 font-medium uppercase tracking-widest italic leading-relaxed text-left">Live Operating Models & Parametric Logic</p>
                     </div>
                     <button onclick="openUploadModal('strategy')" class="bg-sky-600 hover:bg-sky-500 text-white px-8 py-3 rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-xl flex items-center gap-2 transition-all">
                         <i class="fas fa-plus"></i> New Deployment
@@ -175,7 +182,7 @@
             <!-- [탭: 참고 자료] -->
             <section id="content-references" class="tab-content hidden space-y-12 text-left">
                 <div class="flex justify-between items-end">
-                    <h2 class="text-4xl font-black uppercase tracking-tighter">Reference Materials</h2>
+                    <h2 class="text-4xl font-black uppercase tracking-tighter">참고 자료</h2>
                     <button onclick="openUploadModal('reference')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all">
                         <i class="fas fa-plus mr-2"></i> Add Resource
                     </button>
@@ -187,11 +194,12 @@
             <section id="content-upload" class="tab-content hidden space-y-10 text-center">
                 <div class="max-w-2xl mx-auto">
                     <h2 class="text-3xl font-black uppercase tracking-tighter mb-4">CSV Data Sync</h2>
-                    <div id="drop-zone" class="dashboard-card p-20 drop-zone flex flex-col items-center justify-center cursor-pointer group">
+                    <p class="text-slate-500 text-sm mb-10 font-medium italic">전략별 손익 시트를 CSV로 업로드하여 실시간 지표를 동기화하세요.</p>
+                    <div id="drop-zone" class="dashboard-card p-20 drop-zone flex flex-col items-center justify-center cursor-pointer group text-center">
                         <i class="fas fa-file-csv text-5xl text-sky-500 mb-6 group-hover:scale-110 transition-transform"></i>
-                        <p class="text-lg font-bold text-white mb-2 uppercase tracking-widest">Drop '전략별 손익' CSV File</p>
+                        <p class="text-lg font-bold text-white mb-2 uppercase tracking-widest text-center">Drop CSV File Here</p>
                         <input type="file" id="file-input" accept=".csv" class="hidden">
-                        <button onclick="document.getElementById('file-input').click()" class="mt-6 bg-white text-slate-900 px-8 py-3 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-sky-400 hover:text-white transition-all">Select File</button>
+                        <button onclick="document.getElementById('file-input').click()" class="mt-6 bg-white text-slate-900 px-8 py-3 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-sky-400 hover:text-white transition-all text-center">Select File</button>
                     </div>
                 </div>
             </section>
@@ -200,49 +208,61 @@
 
     <!-- [공용 모달 영역] -->
     <div id="modal-container" class="hidden fixed inset-0 modal-overlay flex items-center justify-center p-4 overflow-y-auto">
-        <!-- 전략 등록/수정 폼 -->
+        
+        <!-- 전략 등록/수정 폼 (Direction 추가됨) -->
         <div id="form-strategy" class="hidden bg-[#0f172a] border border-slate-800 w-full max-w-2xl rounded-[2.5rem] p-12 shadow-2xl my-10 animate-in fade-in zoom-in duration-300 text-left">
-            <div class="flex justify-between items-start mb-8">
+            <div class="flex justify-between items-start mb-8 text-left">
                 <h3 class="text-2xl font-black text-white uppercase tracking-tighter" id="strat-form-title">Strategy Registry</h3>
-                <button onclick="closeModal()" class="text-slate-600 hover:text-white text-2xl"><i class="fas fa-times"></i></button>
+                <button onclick="closeModal()" class="text-slate-600 hover:text-white text-2xl transition-colors"><i class="fas fa-times"></i></button>
             </div>
             <input type="hidden" id="strat-id">
-            <div class="space-y-6">
+            <div class="space-y-6 text-left">
                 <div class="grid grid-cols-2 gap-8 text-left">
-                    <div class="space-y-2"><label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block text-left">Group</label>
-                    <select id="in-group" class="w-full rounded-2xl p-4 text-xs font-bold outline-none"><option>Trend</option><option>Mean Reversion</option><option>Multi</option><option>Stat-L/S</option><option>Arbitrage</option></select></div>
-                    <div class="space-y-2"><label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block text-left">Asset</label><input type="text" id="in-asset" class="w-full rounded-2xl p-4 text-xs font-bold" placeholder="e.g. NAS100"></div>
+                    <div class="space-y-2 text-left"><label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block text-left">Group</label>
+                    <select id="in-group" class="w-full rounded-2xl p-4 text-xs font-bold outline-none text-left"><option>Trend</option><option>Mean Reversion</option><option>Multi</option><option>Stat-L/S</option><option>Arbitrage</option></select></div>
+                    <div class="space-y-2 text-left"><label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block text-left">Direction</label>
+                    <select id="in-direction" class="w-full rounded-2xl p-4 text-xs font-bold outline-none text-left"><option value="Long">Long</option><option value="Short">Short</option><option value="Long/Short">Long/Short</option></select></div>
                 </div>
-                <div class="space-y-2"><label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block text-left">Title</label><input type="text" id="in-title" class="w-full rounded-2xl p-4 text-xs font-bold" placeholder="전략 명칭"></div>
+                <div class="grid grid-cols-2 gap-8 text-left">
+                    <div class="space-y-2 text-left"><label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block text-left">Asset</label><input type="text" id="in-asset" class="w-full rounded-2xl p-4 text-xs font-bold" placeholder="e.g. NAS100"></div>
+                    <div class="space-y-2 text-left"><label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block text-left">Strategy Title</label><input type="text" id="in-title" class="w-full rounded-2xl p-4 text-xs font-bold" placeholder="전략 명칭"></div>
+                </div>
                 <div class="space-y-2 text-left">
-                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block text-left">Parameters</label>
-                    <div id="param-input-container" class="space-y-2"></div>
-                    <button type="button" onclick="addParamRow()" class="text-[9px] font-black text-sky-500 tracking-widest uppercase hover:underline">+ Add Parameter</button>
+                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block text-left">Custom Parameters</label>
+                    <div id="param-input-container" class="space-y-2 text-left"></div>
+                    <button type="button" onclick="addParamRow()" class="text-[9px] font-black text-sky-500 tracking-widest uppercase hover:underline text-left">+ Add Parameter</button>
                 </div>
-                <div class="space-y-2 text-left"><label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block">Logic Details</label><textarea id="in-desc" rows="4" class="w-full rounded-2xl p-5 text-xs font-medium leading-relaxed"></textarea></div>
+                <div class="space-y-2 text-left"><label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block text-left">Logic Details</label><textarea id="in-desc" rows="4" class="w-full rounded-2xl p-5 text-xs font-medium leading-relaxed" placeholder="진입 및 청산 로직 설명"></textarea></div>
                 <div class="grid grid-cols-2 gap-6 text-left">
-                    <div class="border border-dashed border-slate-700 rounded-2xl p-6 text-center hover:border-sky-500 cursor-pointer group transition-all"><i class="fas fa-image text-slate-600 mb-1"></i><p class="text-[8px] text-slate-600 font-bold uppercase">Image</p></div>
-                    <div class="border border-dashed border-slate-700 rounded-2xl p-6 text-center hover:border-emerald-500 cursor-pointer transition-all"><i class="fas fa-file-pdf text-slate-600 mb-1"></i><p class="text-[8px] text-slate-600 font-bold uppercase">Material</p></div>
+                    <div class="border border-dashed border-slate-700 rounded-2xl p-6 text-center hover:border-sky-500 cursor-pointer group transition-all text-center"><i class="fas fa-image text-slate-600 mb-1"></i><p class="text-[8px] text-slate-600 font-bold uppercase text-center">Chart Capture</p></div>
+                    <div class="border border-dashed border-slate-700 rounded-2xl p-6 text-center hover:border-emerald-500 cursor-pointer transition-all text-center"><i class="fas fa-file-pdf text-slate-600 mb-1"></i><p class="text-[8px] text-slate-600 font-bold uppercase text-center">Backtest material</p></div>
                 </div>
-                <button onclick="saveStrategy()" class="w-full bg-sky-600 hover:bg-sky-500 text-white font-black py-5 rounded-2xl text-xs uppercase tracking-widest shadow-2xl mt-4">Save Deployment</button>
+                <button onclick="saveStrategy()" class="w-full bg-sky-600 hover:bg-sky-500 text-white font-black py-5 rounded-2xl text-xs uppercase tracking-widest shadow-2xl mt-4">Save Alpha Asset</button>
             </div>
         </div>
 
-        <!-- 참고 자료 등록/수정 폼 -->
+        <!-- 참고 자료 등록/수정 폼 (첨부파일 로직 복구) -->
         <div id="form-reference" class="hidden bg-[#0f172a] border border-slate-800 w-full max-w-xl rounded-[2.5rem] p-12 shadow-2xl animate-in fade-in zoom-in duration-300 text-left">
             <div class="flex justify-between items-start mb-8 text-left">
                 <h3 class="text-2xl font-black text-white uppercase tracking-tighter" id="ref-form-title">Add Resource</h3>
-                <button onclick="closeModal()" class="text-slate-600 hover:text-white text-2xl"><i class="fas fa-times"></i></button>
+                <button onclick="closeModal()" class="text-slate-600 hover:text-white text-2xl transition-colors"><i class="fas fa-times"></i></button>
             </div>
             <input type="hidden" id="ref-id">
             <div class="space-y-6 text-left">
-                <div class="space-y-2"><label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block">Category</label><select id="res-cat" class="w-full rounded-2xl p-4 text-xs font-bold outline-none text-left"><option value="book">Book</option><option value="blog">Blog</option><option value="paper">Paper</option></select></div>
-                <div class="space-y-2"><label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block text-left">Title</label><input type="text" id="res-title" class="w-full rounded-2xl p-4 text-xs font-bold text-left"></div>
-                <div class="space-y-2"><label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block text-left">URL</label><input type="text" id="res-url" class="w-full rounded-2xl p-4 text-xs font-bold font-mono text-left" placeholder="https://..."></div>
-                <div class="space-y-2"><label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block text-left">Summary</label><textarea id="res-desc" rows="4" class="w-full rounded-2xl p-5 text-xs font-medium text-left"></textarea></div>
-                <div class="border border-dashed border-slate-700 rounded-2xl p-8 text-center hover:border-sky-500 cursor-pointer group transition-all text-left">
-                    <i class="fas fa-paperclip text-slate-700 group-hover:text-sky-500 text-2xl mb-2"></i>
-                    <p class="text-[9px] text-slate-600 font-bold uppercase text-center text-left">Attach Supporting Files</p>
+                <div class="space-y-2 text-left"><label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block text-left">Category</label><select id="res-cat" class="w-full rounded-2xl p-4 text-xs font-bold outline-none text-left"><option value="book">Book</option><option value="blog">Blog</option><option value="paper">Paper</option></select></div>
+                <div class="space-y-2 text-left"><label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block text-left">Title</label><input type="text" id="res-title" class="w-full rounded-2xl p-4 text-xs font-bold"></div>
+                <div class="space-y-2 text-left"><label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block text-left">URL</label><input type="text" id="res-url" class="w-full rounded-2xl p-4 text-xs font-bold font-mono text-left" placeholder="https://..."></div>
+                <div class="space-y-2 text-left"><label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block text-left">Summary</label><textarea id="res-desc" rows="4" class="w-full rounded-2xl p-5 text-xs font-medium text-left"></textarea></div>
+                
+                <div class="space-y-2 text-left">
+                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block text-left"><i class="fas fa-paperclip mr-1 text-left"></i> Attach Material</label>
+                    <div class="border border-dashed border-slate-700 rounded-2xl p-8 text-center hover:border-sky-500 cursor-pointer group transition-all text-center">
+                        <input type="file" id="res-file-input" class="hidden" onchange="updateFileNameDisplay(this)">
+                        <div onclick="document.getElementById('res-file-input').click()">
+                            <i class="fas fa-cloud-upload-alt text-slate-700 group-hover:text-sky-500 text-2xl mb-2 text-center"></i>
+                            <p class="text-[9px] text-slate-600 font-bold uppercase text-center" id="res-file-name-display">Click to Select PDF/DOC/IMG</p>
+                        </div>
+                    </div>
                 </div>
                 <button onclick="saveReference()" class="w-full bg-white text-slate-900 font-black py-5 rounded-2xl text-xs uppercase tracking-widest shadow-xl mt-4">Save Knowledge</button>
             </div>
@@ -252,7 +272,7 @@
         <div id="detail-view" class="hidden bg-[#0f172a] border border-slate-800 w-full max-w-2xl rounded-[2.5rem] p-12 shadow-2xl animate-in fade-in zoom-in duration-300 text-left">
             <div class="flex justify-between items-start mb-10 text-left">
                 <div id="detail-header" class="text-left"></div>
-                <button onclick="closeModal()" class="text-slate-600 hover:text-white text-2xl"><i class="fas fa-times"></i></button>
+                <button onclick="closeModal()" class="text-slate-600 hover:text-white text-2xl transition-colors"><i class="fas fa-times"></i></button>
             </div>
             <div id="detail-body" class="space-y-8 text-left"></div>
             <div class="mt-12 flex gap-4 border-t border-slate-800 pt-8 text-left">
@@ -262,11 +282,11 @@
         </div>
     </div>
 
-    <!-- Firebase SDK & Core Logic -->
+    <!-- Firebase & Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, addDoc, collection, onSnapshot, serverTimestamp, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, addDoc, collection, onSnapshot, serverTimestamp, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDcB3T2qsVXTAQcvyCmTLOs3oG4-JKQXb8",
@@ -285,7 +305,7 @@
         const provider = new GoogleAuthProvider();
         const APP_ID = 'prop-desk-hub';
 
-        // --- Firebase Auth & Security ---
+        // --- Auth Gate ---
         const loginGate = document.getElementById('login-gate');
         const appContent = document.getElementById('app-content');
         const btnLogin = document.getElementById('btn-login');
@@ -296,12 +316,12 @@
             try {
                 const result = await signInWithPopup(auth, provider);
                 if (!ALLOWED_EMAILS.includes(result.user.email)) {
-                    errorEl.innerText = "Unauthorized: Access Denied for " + result.user.email;
+                    errorEl.innerText = "Access Denied: " + result.user.email;
                     errorEl.classList.remove('hidden');
                     await signOut(auth);
                 }
             } catch (e) {
-                errorEl.innerText = "Login Failed: " + e.message;
+                errorEl.innerText = "Auth Error: " + e.message;
                 errorEl.classList.remove('hidden');
             }
         };
@@ -312,23 +332,21 @@
             if (user && ALLOWED_EMAILS.includes(user.email)) {
                 loginGate.classList.add('hidden');
                 appContent.classList.remove('hidden');
-                document.getElementById('display-user-name').innerText = user.email.split('@')[0];
-                startApp();
+                document.getElementById('display-user-name').innerText = user.email.split('@')[0].toUpperCase();
+                startHub();
             } else {
                 loginGate.classList.remove('hidden');
                 appContent.classList.add('hidden');
             }
         });
 
-        // --- Data Fetching & Sync ---
-        function startApp() {
-            // Fetch Strategies
+        // --- Hub Initialization ---
+        function startHub() {
             onSnapshot(collection(db, 'artifacts', APP_ID, 'public', 'data', 'strategies'), (snap) => {
                 window.STRATEGIES = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 renderStrategies();
             });
 
-            // Fetch References
             onSnapshot(collection(db, 'artifacts', APP_ID, 'public', 'data', 'references'), (snap) => {
                 window.REFERENCES = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 renderReferences();
@@ -337,7 +355,7 @@
             updateAllUI();
         }
 
-        // --- Global Logic ---
+        // --- Global State & UI ---
         window.STRATEGY_DATA = [
             { name: "Trend", exp: 78.36, dtd: -1.55, mtd: -1.55, ytd: 32.28, color: '#38bdf8' },
             { name: "Mean Reversion", exp: 0.00, dtd: 0.01, mtd: 0.01, ytd: 5.09, color: '#a855f7' },
@@ -369,6 +387,7 @@
 
         function renderSummary() {
             const tbody = document.getElementById('summary-tbody');
+            if(!tbody) return;
             tbody.innerHTML = window.STRATEGY_DATA.map(s => `
                 <tr class="hover:bg-slate-800/40 transition-colors">
                     <td class="pl-8 font-black text-white uppercase tracking-tighter border-l-4" style="border-left-color: ${s.color}">${s.name}</td>
@@ -382,21 +401,21 @@
 
         function renderStrategies() {
             const grid = document.getElementById('live-strat-grid');
-            if(!window.STRATEGIES) return;
+            if(!grid || !window.STRATEGIES) return;
             grid.innerHTML = window.STRATEGIES.map(s => `
-                <div class="dashboard-card p-10 flex flex-col justify-between">
+                <div class="dashboard-card p-10 flex flex-col justify-between h-full">
                     <div class="text-left">
                         <div class="flex justify-between items-center mb-8">
                             <span class="text-[9px] font-black uppercase px-2 py-1 bg-slate-900 border border-slate-800 text-sky-400 rounded-md">${s.group}</span>
-                            <span class="text-[9px] font-black uppercase text-slate-600 tracking-widest">${s.author || 'Trader'}</span>
+                            <span class="text-[9px] font-black uppercase text-slate-600 tracking-widest">${s.direction || 'L/S'}</span>
                         </div>
-                        <h3 class="text-xl font-black text-white tracking-tighter leading-tight mb-2 uppercase text-left">${s.title}</h3>
-                        <p class="text-[10px] font-bold text-slate-500 mb-6 uppercase tracking-widest underline decoration-sky-500/40 text-left">Asset: ${s.asset}</p>
+                        <h3 class="text-xl font-black text-white tracking-tighter leading-tight mb-2 uppercase">${s.title}</h3>
+                        <p class="text-[10px] font-bold text-slate-500 mb-6 uppercase tracking-widest underline decoration-sky-500/40">Asset: ${s.asset}</p>
                         <div class="flex flex-wrap gap-2 mb-8">${(s.params || []).map(p => `<span class="param-tag">${p.k.toUpperCase()}: ${p.v}</span>`).join('')}</div>
-                        <p class="text-[13px] text-slate-400 leading-relaxed font-medium mb-10 line-clamp-3 text-left">${s.desc}</p>
+                        <p class="text-[13px] text-slate-400 leading-relaxed font-medium mb-10 line-clamp-3">${s.desc}</p>
                     </div>
                     <div class="pt-8 border-t border-slate-800/50 flex justify-between items-center">
-                        <button onclick="viewDetail('strategy', '${s.id}')" class="text-[9px] font-black text-sky-500 uppercase hover:text-white transition-all tracking-[0.15em]">Report View <i class="fas fa-chevron-right ml-1"></i></button>
+                        <button onclick="viewDetail('strategy', '${s.id}')" class="text-[9px] font-black text-sky-500 uppercase hover:text-white tracking-[0.15em] transition-colors">Report View <i class="fas fa-chevron-right ml-1"></i></button>
                         <div class="flex gap-4">
                             <button onclick="openEditModal('strategy', '${s.id}')" class="text-slate-600 hover:text-sky-400 transition-colors"><i class="fas fa-edit text-xs"></i></button>
                             <button onclick="deleteItem('strategy', '${s.id}')" class="text-slate-600 hover:text-rose-500 transition-colors"><i class="fas fa-trash-alt text-xs"></i></button>
@@ -408,23 +427,23 @@
 
         function renderReferences() {
             const grid = document.getElementById('references-grid');
-            if(!window.REFERENCES) return;
+            if(!grid || !window.REFERENCES) return;
             grid.innerHTML = window.REFERENCES.map(r => `
                 <div class="dashboard-card p-10 flex flex-col items-center text-center group h-full">
-                    <div class="w-32 h-44 bg-slate-900 rounded-2xl mb-8 shadow-2xl flex items-center justify-center text-slate-800 border border-slate-800 group-hover:border-sky-500 transition-all"><i class="fas fa-book-open text-5xl group-hover:text-sky-500"></i></div>
+                    <div class="w-32 h-44 bg-slate-900 rounded-2xl mb-8 shadow-2xl flex items-center justify-center text-slate-800 border border-slate-800 group-hover:border-sky-500 transition-all"><i class="fas fa-book-open text-5xl group-hover:text-sky-500 transition-colors"></i></div>
                     <span class="ref-badge ref-${r.cat} mb-4">${r.cat}</span>
-                    <h3 class="font-black text-white mb-2 uppercase tracking-tighter text-xs text-center">${r.title}</h3>
+                    <h3 class="font-black text-white mb-2 uppercase tracking-tighter text-xs text-center leading-relaxed">${r.title}</h3>
                     <p class="text-[11px] text-slate-600 leading-relaxed font-medium text-center line-clamp-3 mb-6">${r.desc}</p>
-                    <div class="flex gap-6 mt-auto">
-                         <button onclick="viewDetail('reference', '${r.id}')" class="text-[9px] font-black text-sky-500 uppercase tracking-widest hover:underline">Detail</button>
-                         <button onclick="openEditModal('reference', '${r.id}')" class="text-[9px] font-black text-slate-600 hover:text-white uppercase tracking-widest">Edit</button>
-                         <button onclick="deleteItem('reference', '${r.id}')" class="text-[9px] font-black text-slate-600 hover:text-rose-500 uppercase tracking-widest">Delete</button>
+                    <div class="flex gap-4 mt-auto">
+                         <button onclick="viewDetail('reference', '${r.id}')" class="text-[9px] font-black text-sky-500 uppercase tracking-widest hover:underline transition-colors text-center">Detail</button>
+                         <button onclick="openEditModal('reference', '${r.id}')" class="text-[9px] font-black text-slate-600 hover:text-white transition-colors text-center">Edit</button>
+                         <button onclick="deleteItem('reference', '${r.id}')" class="text-[9px] font-black text-slate-600 hover:text-rose-500 transition-colors text-center">Del</button>
                     </div>
                 </div>
             `).join('');
         }
 
-        // --- Detail View Engine ---
+        // --- Detail Engine ---
         window.viewDetail = (type, id) => {
             const item = type === 'strategy' ? window.STRATEGIES.find(x => x.id === id) : window.REFERENCES.find(x => x.id === id);
             if(!item) return;
@@ -441,13 +460,14 @@
 
             if(type === 'strategy') {
                 body.innerHTML = `
-                    <div class="grid grid-cols-2 gap-8 py-6 border-b border-slate-800">
+                    <div class="grid grid-cols-3 gap-8 py-6 border-b border-slate-800">
                         <div><p class="text-[10px] font-black text-slate-500 uppercase mb-1">Asset</p><p class="text-lg font-bold">${item.asset}</p></div>
-                        <div><p class="text-[10px] font-black text-slate-500 uppercase mb-1">Author</p><p class="text-lg font-bold">${item.author}</p></div>
+                        <div><p class="text-[10px] font-black text-slate-500 uppercase mb-1">Direction</p><p class="text-lg font-bold text-sky-400 uppercase">${item.direction || 'Long/Short'}</p></div>
+                        <div><p class="text-[10px] font-black text-slate-500 uppercase mb-1">Author</p><p class="text-lg font-bold uppercase">${item.author || 'Trader'}</p></div>
                     </div>
                     <div class="py-6 border-b border-slate-800">
                         <p class="text-[10px] font-black text-slate-500 uppercase mb-4 tracking-widest">Logic Setup</p>
-                        <div class="flex flex-wrap gap-3">${item.params.map(p => `<span class="px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-lg text-xs font-bold text-sky-300">${p.k}: ${p.v}</span>`).join('')}</div>
+                        <div class="flex flex-wrap gap-3">${(item.params || []).map(p => `<span class="px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-lg text-xs font-bold text-sky-300">${p.k}: ${p.v}</span>`).join('')}</div>
                     </div>
                     <div class="py-6">
                         <p class="text-[10px] font-black text-slate-500 uppercase mb-4 tracking-widest">Logic Description</p>
@@ -456,14 +476,15 @@
                 `;
             } else {
                 body.innerHTML = `
-                    <div class="py-6 border-b border-slate-800">
+                    <div class="py-6 border-b border-slate-800 text-left">
                         <p class="text-[10px] font-black text-slate-500 uppercase mb-2">Resource Link</p>
-                        <a href="${item.url}" target="_blank" class="text-sky-500 font-bold hover:underline break-all">${item.url || 'No external link'}</a>
+                        <a href="${item.url}" target="_blank" class="text-sky-500 font-bold hover:underline break-all text-left">${item.url || 'No external link'}</a>
                     </div>
-                    <div class="py-6">
+                    <div class="py-6 text-left">
                         <p class="text-[10px] font-black text-slate-500 uppercase mb-4">Summary & Notes</p>
-                        <p class="text-sm text-slate-300 leading-relaxed whitespace-pre-wrap">${item.desc}</p>
+                        <p class="text-sm text-slate-300 leading-relaxed whitespace-pre-wrap text-left">${item.desc}</p>
                     </div>
+                    ${item.fileName ? `<div class="py-4 bg-slate-900/50 p-4 rounded-xl border border-slate-800 flex items-center gap-3"><i class="fas fa-file-pdf text-rose-500"></i><span class="text-xs font-bold">${item.fileName}</span></div>` : ''}
                 `;
             }
 
@@ -481,6 +502,7 @@
             const id = document.getElementById('strat-id').value;
             const data = {
                 group: document.getElementById('in-group').value,
+                direction: document.getElementById('in-direction').value,
                 asset: document.getElementById('in-asset').value,
                 title: document.getElementById('in-title').value,
                 desc: document.getElementById('in-desc').value,
@@ -492,46 +514,43 @@
             if(!data.title || !data.asset) return alert("Required fields missing.");
 
             try {
-                if(id) {
-                    await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'strategies', id), data, { merge: true });
-                } else {
-                    await addDoc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'strategies'), { ...data, createdAt: serverTimestamp() });
-                }
+                if(id) await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'strategies', id), data, { merge: true });
+                else await addDoc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'strategies'), { ...data, createdAt: serverTimestamp() });
                 closeModal();
-                addAlert('Strategy Saved', data.title + ' deployment updated.');
+                addAlert('Sync Success', data.title + ' deployment updated.');
             } catch (e) { alert("Save error: " + e.message); }
         };
 
         window.saveReference = async () => {
             const id = document.getElementById('ref-id').value;
+            const fileInput = document.getElementById('res-file-input');
+            const fileName = fileInput.files.length > 0 ? fileInput.files[0].name : (window.REFERENCES.find(x => x.id === id)?.fileName || '');
+
             const data = {
                 cat: document.getElementById('res-cat').value,
                 title: document.getElementById('res-title').value,
                 url: document.getElementById('res-url').value,
                 desc: document.getElementById('res-desc').value,
+                fileName: fileName,
                 updatedAt: serverTimestamp()
             };
 
             if(!data.title) return alert("Title required.");
 
             try {
-                if(id) {
-                    await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'references', id), data, { merge: true });
-                } else {
-                    await addDoc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'references'), { ...data, createdAt: serverTimestamp() });
-                }
+                if(id) await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'references', id), data, { merge: true });
+                else await addDoc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'references'), { ...data, createdAt: serverTimestamp() });
                 closeModal();
-                addAlert('Knowledge Saved', data.title + ' archived.');
+                addAlert('Library Updated', data.title + ' archived.');
             } catch (e) { alert("Save error: " + e.message); }
         };
 
         window.deleteItem = async (type, id) => {
-            if(!confirm("정말 삭제하시겠습니까? 데이터 복구가 불가능합니다.")) return;
+            if(!confirm("정말 삭제하시겠습니까?")) return;
             const col = type === 'strategy' ? 'strategies' : 'references';
             try {
                 await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', col, id));
                 closeModal();
-                addAlert('Asset Deleted', '정보가 삭제되었습니다.');
             } catch (e) { alert("Delete error: " + e.message); }
         };
 
@@ -545,12 +564,14 @@
                 document.getElementById('strat-id').value = '';
                 document.getElementById('strat-form-title').innerText = 'Register Alpha';
                 document.getElementById('param-input-container').innerHTML = '';
-                addParamRow(); // Initial row
+                addParamRow(); 
             } else {
                 document.getElementById('form-reference').classList.remove('hidden');
                 document.getElementById('form-strategy').classList.add('hidden');
                 document.getElementById('ref-id').value = '';
                 document.getElementById('ref-form-title').innerText = 'Add Resource';
+                document.getElementById('res-file-name-display').innerText = 'Click to Select PDF/DOC/IMG';
+                document.getElementById('res-file-input').value = '';
             }
         };
 
@@ -566,11 +587,12 @@
                 document.getElementById('strat-id').value = id;
                 document.getElementById('strat-form-title').innerText = 'Edit Alpha Deployment';
                 document.getElementById('in-group').value = item.group;
+                document.getElementById('in-direction').value = item.direction || 'Long';
                 document.getElementById('in-asset').value = item.asset;
                 document.getElementById('in-title').value = item.title;
                 document.getElementById('in-desc').value = item.desc;
                 document.getElementById('param-input-container').innerHTML = '';
-                item.params.forEach(p => addParamRow(p.k, p.v));
+                (item.params || []).forEach(p => addParamRow(p.k, p.v));
             } else {
                 document.getElementById('form-reference').classList.remove('hidden');
                 document.getElementById('ref-id').value = id;
@@ -578,18 +600,22 @@
                 document.getElementById('res-title').value = item.title;
                 document.getElementById('res-url').value = item.url;
                 document.getElementById('res-desc').value = item.desc;
+                document.getElementById('res-file-name-display').innerText = item.fileName || 'Click to Select PDF/DOC/IMG';
             }
         };
 
-        window.closeModal = () => {
-            document.getElementById('modal-container').classList.add('hidden');
-        };
+        window.closeModal = () => document.getElementById('modal-container').classList.add('hidden');
 
         window.addParamRow = (k = '', v = '') => {
             const container = document.getElementById('param-input-container');
             const div = document.createElement('div'); div.className = 'flex gap-3 text-left mb-2';
-            div.innerHTML = `<input type="text" placeholder="지표명" value="${k}" class="w-1/2 rounded-2xl p-4 text-xs font-bold param-key"><input type="text" placeholder="값" value="${v}" class="w-1/2 rounded-2xl p-4 text-xs font-bold font-mono param-val">`;
+            div.innerHTML = `<input type="text" placeholder="지표명" value="${k}" class="w-1/2 rounded-2xl p-4 text-xs font-bold param-key text-left"><input type="text" placeholder="값" value="${v}" class="w-1/2 rounded-2xl p-4 text-xs font-bold font-mono param-val text-left">`;
             container.appendChild(div);
+        };
+
+        window.updateFileNameDisplay = (input) => {
+            const display = document.getElementById('res-file-name-display');
+            display.innerText = input.files.length > 0 ? input.files[0].name : 'Click to Select PDF/DOC/IMG';
         };
 
         // --- Charts Engine ---
@@ -598,12 +624,13 @@
             createChart('totalPnlChart', [totalYTD*0.2, totalYTD*0.5, totalYTD*0.4, totalYTD*0.7, totalYTD*0.9, totalYTD*0.8, totalYTD], '#38bdf8', true);
             
             const container = document.getElementById('individual-charts-container');
+            if(!container) return;
             container.innerHTML = '';
             window.STRATEGY_DATA.forEach(s => {
                 const canvasId = `chart${s.name.replace(/[^a-zA-Z]/g, '').toLowerCase()}`;
                 container.insertAdjacentHTML('beforeend', `
                     <div class="dashboard-card p-6 text-left">
-                        <div class="flex justify-between mb-4"><span class="text-xs font-bold uppercase tracking-widest" style="color:${s.color}">${s.name}</span><span class="text-xs font-mono ${(s.ytd>=0?'val-up':'val-down')}">${(s.ytd>=0?'+':'') + s.ytd.toFixed(2)}억</span></div>
+                        <div class="flex justify-between mb-4"><span class="text-xs font-bold uppercase tracking-widest text-left" style="color:${s.color}">${s.name}</span><span class="text-xs font-mono ${(s.ytd>=0?'val-up':'val-down')}">${(s.ytd>=0?'+':'') + s.ytd.toFixed(2)}억</span></div>
                         <div class="h-[180px]"><canvas id="${canvasId}"></canvas></div>
                     </div>
                 `);
@@ -626,7 +653,9 @@
         function initUploadEngine() {
             const dropZone = document.getElementById('drop-zone');
             if(!dropZone) return;
-            dropZone.ondrop = (e) => { e.preventDefault(); parseCSV(e.dataTransfer.files[0]); };
+            dropZone.ondragover = (e) => { e.preventDefault(); dropZone.classList.add('active'); };
+            dropZone.ondragleave = () => dropZone.classList.remove('active');
+            dropZone.ondrop = (e) => { e.preventDefault(); dropZone.classList.remove('active'); parseCSV(e.dataTransfer.files[0]); };
             document.getElementById('file-input').onchange = (e) => parseCSV(e.target.files[0]);
         }
 
@@ -644,7 +673,7 @@
                 });
                 window.STRATEGY_DATA = newStats; 
                 renderDashboardCards(); renderSummary(); initCharts();
-                addAlert('Sync Completed', 'Performance metrics updated via ' + file.name);
+                addAlert('Data Synced', file.name + ' performance reflected.');
                 document.querySelector('.nav-tab[data-tab="dashboard"]').click();
             };
             reader.readAsText(file);
@@ -653,7 +682,7 @@
         function addAlert(title, text) {
             const container = document.getElementById('alert-list');
             if(!container) return;
-            container.insertAdjacentHTML('afterbegin', `<div class="p-5 rounded-2xl bg-sky-600/10 border border-sky-500/30 border-l-4 border-sky-500 text-left"><span class="text-[9px] font-black text-sky-500 uppercase block mb-1">Hub Event</span><p class="text-xs text-slate-200 font-bold mb-1">${title}</p><p class="text-[10px] text-slate-500">${text}</p></div>`);
+            container.insertAdjacentHTML('afterbegin', `<div class="p-5 rounded-2xl bg-sky-600/10 border border-sky-500/30 border-l-4 border-sky-500 text-left animate-in fade-in slide-in-from-right-2 duration-300"><span class="text-[9px] font-black text-sky-500 uppercase block mb-1">Hub Update</span><p class="text-xs text-slate-200 font-bold mb-1">${title}</p><p class="text-[10px] text-slate-500">${text}</p></div>`);
         }
 
         // --- Navigation ---
