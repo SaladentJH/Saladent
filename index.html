@@ -31,6 +31,8 @@
         .ref-book { background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2); }
         .ref-blog { background: rgba(56, 189, 248, 0.1); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.2); }
         .ref-paper { background: rgba(168, 85, 247, 0.1); color: #a855f7; border: 1px solid rgba(168, 85, 247, 0.2); }
+        .filter-btn { padding: 0.5rem 1rem; border-radius: 0.75rem; font-size: 0.75rem; font-weight: 700; border: 1px solid #1e293b; color: #64748b; transition: all 0.2s; }
+        .filter-btn.active { background: #38bdf8; color: white; border-color: #38bdf8; }
     </style>
 </head>
 <body>
@@ -97,8 +99,8 @@
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
                     <div class="dashboard-card p-7 border-sky-500/20 bg-sky-500/5 text-left">
-                        <p class="text-slate-500 text-[10px] font-bold uppercase mb-2 tracking-widest">Total Exposure (억)</p>
-                        <div class="text-4xl font-black text-white" id="total-exp">0.00</div>
+                        <p class="text-slate-500 text-[10px] font-bold uppercase mb-2 tracking-widest text-left">Total Exposure (억)</p>
+                        <div class="text-4xl font-black text-white text-left" id="total-exp">0.00</div>
                     </div>
                     <div class="dashboard-card p-7 text-left">
                         <p class="text-slate-500 text-[10px] font-bold uppercase mb-2 tracking-widest">Total DTD (억)</p>
@@ -134,7 +136,6 @@
                             </table>
                         </div>
                     </div>
-                    <!-- Live Alert Feed -->
                     <div class="lg:col-span-4 space-y-6 text-left">
                         <h2 class="text-xl font-black flex items-center gap-3 uppercase tracking-tight">
                             <i class="fas fa-bell text-rose-500"></i> Live Alert Feed
@@ -176,6 +177,17 @@
                         <i class="fas fa-plus"></i> New Deployment
                     </button>
                 </div>
+
+                <!-- [신규] 카테고리 필터 바 -->
+                <div class="flex gap-3 overflow-x-auto no-scrollbar pb-2">
+                    <button onclick="filterStrategies('All')" class="filter-btn active" id="filter-all">All Strategies</button>
+                    <button onclick="filterStrategies('Trend')" class="filter-btn" id="filter-trend">Trend</button>
+                    <button onclick="filterStrategies('Mean Reversion')" class="filter-btn" id="filter-mr">Mean Reversion</button>
+                    <button onclick="filterStrategies('Multi')" class="filter-btn" id="filter-multi">Multi</button>
+                    <button onclick="filterStrategies('Stat-L/S')" class="filter-btn" id="filter-stat">Stat-L/S</button>
+                    <button onclick="filterStrategies('Arbitrage')" class="filter-btn" id="filter-arb">Arbitrage</button>
+                </div>
+
                 <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8" id="live-strat-grid"></div>
             </section>
 
@@ -194,10 +206,9 @@
             <section id="content-upload" class="tab-content hidden space-y-10 text-center">
                 <div class="max-w-2xl mx-auto">
                     <h2 class="text-3xl font-black uppercase tracking-tighter mb-4">CSV Data Sync</h2>
-                    <p class="text-slate-500 text-sm mb-10 font-medium italic">전략별 손익 시트를 CSV로 업로드하여 실시간 지표를 동기화하세요.</p>
                     <div id="drop-zone" class="dashboard-card p-20 drop-zone flex flex-col items-center justify-center cursor-pointer group text-center">
                         <i class="fas fa-file-csv text-5xl text-sky-500 mb-6 group-hover:scale-110 transition-transform"></i>
-                        <p class="text-lg font-bold text-white mb-2 uppercase tracking-widest text-center">Drop CSV File Here</p>
+                        <p class="text-lg font-bold text-white mb-2 uppercase tracking-widest text-center">Drop '전략별 손익' CSV File</p>
                         <input type="file" id="file-input" accept=".csv" class="hidden">
                         <button onclick="document.getElementById('file-input').click()" class="mt-6 bg-white text-slate-900 px-8 py-3 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-sky-400 hover:text-white transition-all text-center">Select File</button>
                     </div>
@@ -209,7 +220,7 @@
     <!-- [공용 모달 영역] -->
     <div id="modal-container" class="hidden fixed inset-0 modal-overlay flex items-center justify-center p-4 overflow-y-auto">
         
-        <!-- 전략 등록/수정 폼 (Direction 추가됨) -->
+        <!-- 전략 등록/수정 폼 -->
         <div id="form-strategy" class="hidden bg-[#0f172a] border border-slate-800 w-full max-w-2xl rounded-[2.5rem] p-12 shadow-2xl my-10 animate-in fade-in zoom-in duration-300 text-left">
             <div class="flex justify-between items-start mb-8 text-left">
                 <h3 class="text-2xl font-black text-white uppercase tracking-tighter" id="strat-form-title">Strategy Registry</h3>
@@ -233,15 +244,31 @@
                     <button type="button" onclick="addParamRow()" class="text-[9px] font-black text-sky-500 tracking-widest uppercase hover:underline text-left">+ Add Parameter</button>
                 </div>
                 <div class="space-y-2 text-left"><label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block text-left">Logic Details</label><textarea id="in-desc" rows="4" class="w-full rounded-2xl p-5 text-xs font-medium leading-relaxed" placeholder="진입 및 청산 로직 설명"></textarea></div>
+                
+                <!-- [수정] 파일 업로드 실제 작동하도록 input 추가 -->
                 <div class="grid grid-cols-2 gap-6 text-left">
-                    <div class="border border-dashed border-slate-700 rounded-2xl p-6 text-center hover:border-sky-500 cursor-pointer group transition-all text-center"><i class="fas fa-image text-slate-600 mb-1"></i><p class="text-[8px] text-slate-600 font-bold uppercase text-center">Chart Capture</p></div>
-                    <div class="border border-dashed border-slate-700 rounded-2xl p-6 text-center hover:border-emerald-500 cursor-pointer transition-all text-center"><i class="fas fa-file-pdf text-slate-600 mb-1"></i><p class="text-[8px] text-slate-600 font-bold uppercase text-center">Backtest material</p></div>
+                    <div class="relative">
+                        <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-2">Chart Capture</label>
+                        <input type="file" id="strat-chart-input" class="hidden" onchange="updateStratFileName('chart', this)">
+                        <div onclick="document.getElementById('strat-chart-input').click()" class="border border-dashed border-slate-700 rounded-2xl p-6 text-center hover:border-sky-500 cursor-pointer group transition-all">
+                            <i class="fas fa-image text-slate-600 mb-1 group-hover:text-sky-500"></i>
+                            <p class="text-[8px] text-slate-600 font-bold uppercase truncate" id="strat-chart-name">Click to Upload</p>
+                        </div>
+                    </div>
+                    <div class="relative">
+                        <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-2">Backtest Material</label>
+                        <input type="file" id="strat-report-input" class="hidden" onchange="updateStratFileName('report', this)">
+                        <div onclick="document.getElementById('strat-report-input').click()" class="border border-dashed border-slate-700 rounded-2xl p-6 text-center hover:border-emerald-500 cursor-pointer group transition-all">
+                            <i class="fas fa-file-pdf text-slate-600 mb-1 group-hover:text-emerald-500"></i>
+                            <p class="text-[8px] text-slate-600 font-bold uppercase truncate" id="strat-report-name">Click to Upload</p>
+                        </div>
+                    </div>
                 </div>
                 <button onclick="saveStrategy()" class="w-full bg-sky-600 hover:bg-sky-500 text-white font-black py-5 rounded-2xl text-xs uppercase tracking-widest shadow-2xl mt-4">Save Alpha Asset</button>
             </div>
         </div>
 
-        <!-- 참고 자료 등록/수정 폼 (첨부파일 로직 복구) -->
+        <!-- 참고 자료 등록/수정 폼 -->
         <div id="form-reference" class="hidden bg-[#0f172a] border border-slate-800 w-full max-w-xl rounded-[2.5rem] p-12 shadow-2xl animate-in fade-in zoom-in duration-300 text-left">
             <div class="flex justify-between items-start mb-8 text-left">
                 <h3 class="text-2xl font-black text-white uppercase tracking-tighter" id="ref-form-title">Add Resource</h3>
@@ -364,6 +391,8 @@
             { name: "Arbitrage", exp: 26.90, dtd: 0.36, mtd: 0.36, ytd: 5.10, color: '#10b981' }
         ];
 
+        window.STRATEGY_FILTER = 'All';
+
         window.updateAllUI = () => {
             renderSummary();
             renderDashboardCards();
@@ -399,23 +428,39 @@
             `).join('');
         }
 
+        // --- Filtering Logic ---
+        window.filterStrategies = (cat) => {
+            window.STRATEGY_FILTER = cat;
+            const buttons = document.querySelectorAll('.filter-btn');
+            buttons.forEach(btn => {
+                if(btn.innerText.includes(cat) || (cat === 'All' && btn.id === 'filter-all')) btn.classList.add('active');
+                else btn.classList.remove('active');
+            });
+            renderStrategies();
+        };
+
         function renderStrategies() {
             const grid = document.getElementById('live-strat-grid');
             if(!grid || !window.STRATEGIES) return;
-            grid.innerHTML = window.STRATEGIES.map(s => `
+
+            const filtered = window.STRATEGY_FILTER === 'All' 
+                ? window.STRATEGIES 
+                : window.STRATEGIES.filter(s => s.group === window.STRATEGY_FILTER);
+
+            grid.innerHTML = filtered.map(s => `
                 <div class="dashboard-card p-10 flex flex-col justify-between h-full">
                     <div class="text-left">
                         <div class="flex justify-between items-center mb-8">
                             <span class="text-[9px] font-black uppercase px-2 py-1 bg-slate-900 border border-slate-800 text-sky-400 rounded-md">${s.group}</span>
                             <span class="text-[9px] font-black uppercase text-slate-600 tracking-widest">${s.direction || 'L/S'}</span>
                         </div>
-                        <h3 class="text-xl font-black text-white tracking-tighter leading-tight mb-2 uppercase">${s.title}</h3>
+                        <h3 class="text-xl font-black text-white tracking-tighter leading-tight mb-2 uppercase text-left">${s.title}</h3>
                         <p class="text-[10px] font-bold text-slate-500 mb-6 uppercase tracking-widest underline decoration-sky-500/40">Asset: ${s.asset}</p>
                         <div class="flex flex-wrap gap-2 mb-8">${(s.params || []).map(p => `<span class="param-tag">${p.k.toUpperCase()}: ${p.v}</span>`).join('')}</div>
                         <p class="text-[13px] text-slate-400 leading-relaxed font-medium mb-10 line-clamp-3">${s.desc}</p>
                     </div>
                     <div class="pt-8 border-t border-slate-800/50 flex justify-between items-center">
-                        <button onclick="viewDetail('strategy', '${s.id}')" class="text-[9px] font-black text-sky-500 uppercase hover:text-white tracking-[0.15em] transition-colors">Report View <i class="fas fa-chevron-right ml-1"></i></button>
+                        <button onclick="viewDetail('strategy', '${s.id}')" class="text-[9px] font-black text-sky-500 uppercase hover:text-white transition-all tracking-[0.15em] transition-colors">Report View <i class="fas fa-chevron-right ml-1"></i></button>
                         <div class="flex gap-4">
                             <button onclick="openEditModal('strategy', '${s.id}')" class="text-slate-600 hover:text-sky-400 transition-colors"><i class="fas fa-edit text-xs"></i></button>
                             <button onclick="deleteItem('strategy', '${s.id}')" class="text-slate-600 hover:text-rose-500 transition-colors"><i class="fas fa-trash-alt text-xs"></i></button>
@@ -434,10 +479,12 @@
                     <span class="ref-badge ref-${r.cat} mb-4">${r.cat}</span>
                     <h3 class="font-black text-white mb-2 uppercase tracking-tighter text-xs text-center leading-relaxed">${r.title}</h3>
                     <p class="text-[11px] text-slate-600 leading-relaxed font-medium text-center line-clamp-3 mb-6">${r.desc}</p>
-                    <div class="flex gap-4 mt-auto">
-                         <button onclick="viewDetail('reference', '${r.id}')" class="text-[9px] font-black text-sky-500 uppercase tracking-widest hover:underline transition-colors text-center">Detail</button>
-                         <button onclick="openEditModal('reference', '${r.id}')" class="text-[9px] font-black text-slate-600 hover:text-white transition-colors text-center">Edit</button>
-                         <button onclick="deleteItem('reference', '${r.id}')" class="text-[9px] font-black text-slate-600 hover:text-rose-500 transition-colors text-center">Del</button>
+                    <div class="flex flex-col gap-2 mt-auto w-full">
+                         <button onclick="viewDetail('reference', '${r.id}')" class="text-[9px] font-black text-sky-500 bg-sky-500/5 py-2 rounded-lg uppercase tracking-widest hover:bg-sky-500 hover:text-white transition-all">Detail & Download</button>
+                         <div class="flex justify-center gap-4">
+                            <button onclick="openEditModal('reference', '${r.id}')" class="text-[9px] font-black text-slate-600 hover:text-white transition-colors">Edit</button>
+                            <button onclick="deleteItem('reference', '${r.id}')" class="text-[9px] font-black text-slate-600 hover:text-rose-500 transition-colors">Del</button>
+                         </div>
                     </div>
                 </div>
             `).join('');
@@ -460,18 +507,22 @@
 
             if(type === 'strategy') {
                 body.innerHTML = `
-                    <div class="grid grid-cols-3 gap-8 py-6 border-b border-slate-800">
+                    <div class="grid grid-cols-3 gap-8 py-6 border-b border-slate-800 text-left">
                         <div><p class="text-[10px] font-black text-slate-500 uppercase mb-1">Asset</p><p class="text-lg font-bold">${item.asset}</p></div>
                         <div><p class="text-[10px] font-black text-slate-500 uppercase mb-1">Direction</p><p class="text-lg font-bold text-sky-400 uppercase">${item.direction || 'Long/Short'}</p></div>
                         <div><p class="text-[10px] font-black text-slate-500 uppercase mb-1">Author</p><p class="text-lg font-bold uppercase">${item.author || 'Trader'}</p></div>
                     </div>
-                    <div class="py-6 border-b border-slate-800">
+                    <div class="py-6 border-b border-slate-800 text-left">
                         <p class="text-[10px] font-black text-slate-500 uppercase mb-4 tracking-widest">Logic Setup</p>
                         <div class="flex flex-wrap gap-3">${(item.params || []).map(p => `<span class="px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-lg text-xs font-bold text-sky-300">${p.k}: ${p.v}</span>`).join('')}</div>
                     </div>
-                    <div class="py-6">
+                    <div class="py-6 text-left">
                         <p class="text-[10px] font-black text-slate-500 uppercase mb-4 tracking-widest">Logic Description</p>
                         <p class="text-sm text-slate-300 leading-relaxed whitespace-pre-wrap">${item.desc}</p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 py-6 border-t border-slate-800">
+                        ${item.chartName ? `<button onclick="downloadMock('${item.chartName}')" class="flex items-center justify-center gap-2 p-4 bg-sky-500/10 rounded-xl border border-sky-500/20 text-sky-400 text-xs font-bold hover:bg-sky-500 hover:text-white transition-all"><i class="fas fa-image"></i> Download Chart</button>` : '<div class="p-4 bg-slate-900 text-slate-600 text-xs text-center rounded-xl">No Chart</div>'}
+                        ${item.reportName ? `<button onclick="downloadMock('${item.reportName}')" class="flex items-center justify-center gap-2 p-4 bg-emerald-500/10 rounded-xl border border-emerald-500/20 text-emerald-400 text-xs font-bold hover:bg-emerald-500 hover:text-white transition-all"><i class="fas fa-file-pdf"></i> Download Report</button>` : '<div class="p-4 bg-slate-900 text-slate-600 text-xs text-center rounded-xl">No Report</div>'}
                     </div>
                 `;
             } else {
@@ -484,7 +535,17 @@
                         <p class="text-[10px] font-black text-slate-500 uppercase mb-4">Summary & Notes</p>
                         <p class="text-sm text-slate-300 leading-relaxed whitespace-pre-wrap text-left">${item.desc}</p>
                     </div>
-                    ${item.fileName ? `<div class="py-4 bg-slate-900/50 p-4 rounded-xl border border-slate-800 flex items-center gap-3"><i class="fas fa-file-pdf text-rose-500"></i><span class="text-xs font-bold">${item.fileName}</span></div>` : ''}
+                    ${item.fileName ? `
+                    <div class="py-6 border-t border-slate-800">
+                        <p class="text-[10px] font-black text-slate-500 uppercase mb-4">Attached File</p>
+                        <button onclick="downloadMock('${item.fileName}')" class="w-full flex items-center justify-between p-4 bg-slate-900 rounded-xl border border-slate-800 hover:border-sky-500 transition-all group">
+                            <div class="flex items-center gap-3">
+                                <i class="fas fa-file-pdf text-rose-500"></i>
+                                <span class="text-xs font-bold text-slate-300">${item.fileName}</span>
+                            </div>
+                            <i class="fas fa-download text-slate-600 group-hover:text-sky-500 transition-colors"></i>
+                        </button>
+                    </div>` : ''}
                 `;
             }
 
@@ -497,9 +558,20 @@
             document.getElementById('form-reference').classList.add('hidden');
         };
 
+        // --- Mock Download Function ---
+        window.downloadMock = (filename) => {
+            alert(`"${filename}" 다운로드를 시작합니다.\n(실제 환경에서는 Firebase Storage의 URL에서 파일을 가져옵니다.)`);
+        };
+
         // --- Save / Edit / Delete ---
         window.saveStrategy = async () => {
             const id = document.getElementById('strat-id').value;
+            const chartInput = document.getElementById('strat-chart-input');
+            const reportInput = document.getElementById('strat-report-input');
+
+            // 기존 아이템 찾기 (수정 시 파일명 유지를 위해)
+            const existing = id ? window.STRATEGIES.find(x => x.id === id) : null;
+
             const data = {
                 group: document.getElementById('in-group').value,
                 direction: document.getElementById('in-direction').value,
@@ -508,6 +580,8 @@
                 desc: document.getElementById('in-desc').value,
                 params: Array.from(document.querySelectorAll('.param-key')).map((k, i) => ({ k: k.value, v: document.querySelectorAll('.param-val')[i].value })).filter(p => p.k),
                 author: auth.currentUser.email.split('@')[0],
+                chartName: chartInput.files.length > 0 ? chartInput.files[0].name : (existing?.chartName || ''),
+                reportName: reportInput.files.length > 0 ? reportInput.files[0].name : (existing?.reportName || ''),
                 updatedAt: serverTimestamp()
             };
 
@@ -517,21 +591,21 @@
                 if(id) await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'strategies', id), data, { merge: true });
                 else await addDoc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'strategies'), { ...data, createdAt: serverTimestamp() });
                 closeModal();
-                addAlert('Sync Success', data.title + ' deployment updated.');
+                addAlert('Strategy Saved', data.title + ' deployment updated.');
             } catch (e) { alert("Save error: " + e.message); }
         };
 
         window.saveReference = async () => {
             const id = document.getElementById('ref-id').value;
             const fileInput = document.getElementById('res-file-input');
-            const fileName = fileInput.files.length > 0 ? fileInput.files[0].name : (window.REFERENCES.find(x => x.id === id)?.fileName || '');
+            const existing = id ? window.REFERENCES.find(x => x.id === id) : null;
 
             const data = {
                 cat: document.getElementById('res-cat').value,
                 title: document.getElementById('res-title').value,
                 url: document.getElementById('res-url').value,
                 desc: document.getElementById('res-desc').value,
-                fileName: fileName,
+                fileName: fileInput.files.length > 0 ? fileInput.files[0].name : (existing?.fileName || ''),
                 updatedAt: serverTimestamp()
             };
 
@@ -564,6 +638,10 @@
                 document.getElementById('strat-id').value = '';
                 document.getElementById('strat-form-title').innerText = 'Register Alpha';
                 document.getElementById('param-input-container').innerHTML = '';
+                document.getElementById('strat-chart-name').innerText = 'Click to Upload';
+                document.getElementById('strat-report-name').innerText = 'Click to Upload';
+                document.getElementById('strat-chart-input').value = '';
+                document.getElementById('strat-report-input').value = '';
                 addParamRow(); 
             } else {
                 document.getElementById('form-reference').classList.remove('hidden');
@@ -591,6 +669,8 @@
                 document.getElementById('in-asset').value = item.asset;
                 document.getElementById('in-title').value = item.title;
                 document.getElementById('in-desc').value = item.desc;
+                document.getElementById('strat-chart-name').innerText = item.chartName || 'Click to Upload';
+                document.getElementById('strat-report-name').innerText = item.reportName || 'Click to Upload';
                 document.getElementById('param-input-container').innerHTML = '';
                 (item.params || []).forEach(p => addParamRow(p.k, p.v));
             } else {
@@ -618,6 +698,11 @@
             display.innerText = input.files.length > 0 ? input.files[0].name : 'Click to Select PDF/DOC/IMG';
         };
 
+        window.updateStratFileName = (type, input) => {
+            const displayId = type === 'chart' ? 'strat-chart-name' : 'strat-report-name';
+            document.getElementById(displayId).innerText = input.files.length > 0 ? input.files[0].name : 'Click to Upload';
+        };
+
         // --- Charts Engine ---
         function initCharts() {
             const totalYTD = window.STRATEGY_DATA.reduce((a, b) => a + b.ytd, 0);
@@ -630,7 +715,7 @@
                 const canvasId = `chart${s.name.replace(/[^a-zA-Z]/g, '').toLowerCase()}`;
                 container.insertAdjacentHTML('beforeend', `
                     <div class="dashboard-card p-6 text-left">
-                        <div class="flex justify-between mb-4"><span class="text-xs font-bold uppercase tracking-widest text-left" style="color:${s.color}">${s.name}</span><span class="text-xs font-mono ${(s.ytd>=0?'val-up':'val-down')}">${(s.ytd>=0?'+':'') + s.ytd.toFixed(2)}억</span></div>
+                        <div class="flex justify-between mb-4 text-left"><span class="text-xs font-bold uppercase tracking-widest text-left" style="color:${s.color}">${s.name}</span><span class="text-xs font-mono ${(s.ytd>=0?'val-up':'val-down')}">${(s.ytd>=0?'+':'') + s.ytd.toFixed(2)}억</span></div>
                         <div class="h-[180px]"><canvas id="${canvasId}"></canvas></div>
                     </div>
                 `);
@@ -682,7 +767,7 @@
         function addAlert(title, text) {
             const container = document.getElementById('alert-list');
             if(!container) return;
-            container.insertAdjacentHTML('afterbegin', `<div class="p-5 rounded-2xl bg-sky-600/10 border border-sky-500/30 border-l-4 border-sky-500 text-left animate-in fade-in slide-in-from-right-2 duration-300"><span class="text-[9px] font-black text-sky-500 uppercase block mb-1">Hub Update</span><p class="text-xs text-slate-200 font-bold mb-1">${title}</p><p class="text-[10px] text-slate-500">${text}</p></div>`);
+            container.insertAdjacentHTML('afterbegin', `<div class="p-5 rounded-2xl bg-sky-600/10 border border-sky-500/30 border-l-4 border-sky-500 text-left animate-in fade-in slide-in-from-right-2 duration-300"><span class="text-[9px] font-black text-sky-500 uppercase block mb-1">Hub Update</span><p class="text-xs text-slate-200 font-bold mb-1 text-left">${title}</p><p class="text-[10px] text-slate-500 text-left">${text}</p></div>`);
         }
 
         // --- Navigation ---
